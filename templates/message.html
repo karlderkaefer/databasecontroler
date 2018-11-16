@@ -1,0 +1,7 @@
+<div id="messages">
+{{ if .message }}
+<div class="alert alert-{{ .message.Severity }}" role="alert">
+  <strong>{{ .message.Severity }}!</strong> {{ .message.Content }}
+</div>
+{{ end }}
+</div>

@@ -1,0 +1,44 @@
+<div class="card text-dark bg-light mb-3">
+  <div class="card-body">
+    <form action="javascript:create()">
+      <div class="form-group row">
+        <label for="database" class="col-sm-2 col-form-label">database</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="database" name="database">
+            <option{{ if eq .database "oracle11" }} selected{{ end }}>oracle11</option>
+            <option{{ if eq .database "oracle12" }} selected{{ end }}>oracle12</option>
+            <option{{ if eq .database "mysql" }} selected{{ end }}>mysql</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="action" class="col-sm-2 col-form-label">action</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="action" name="action">
+              <option>create</option>
+              <option>drop</option>
+              <option>recreate</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="username" class="col-sm-2 col-form-label">username</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="username" id="username" value="{{ .username }}" placeholder="username">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="password" class="col-sm-2 col-form-label">password</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="password" id="password" value="{{ .password }}" placeholder="password">
+          <small id="passwordHelpInline" class="text-muted">
+            Must be 8-20 characters long.
+          </small>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="button" class="btn btn-secondary" onclick="toogleList()">List Databases</button>
+      <!-- <button type="button" class="btn btn-secondary" onclick="create()">Create</button> -->
+    </form>
+  </div>
+</div>
