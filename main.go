@@ -55,7 +55,7 @@ type FormData struct {
 
 func ListDatabaseApi(c *gin.Context) {
 	databaseName := c.Param("database")
-	db, err := database.GetDatabaseHandler(databaseName)
+	db, err := database.GetDatabase(database.ParseVersion(databaseName))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -74,7 +74,7 @@ func RecreateDatabaseApi(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db, err := database.GetDatabaseHandler(data.Database)
+	db, err := database.GetDatabase(database.ParseVersion(data.Database))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -93,7 +93,7 @@ func CreateDabaseApi(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db, err := database.GetDatabaseHandler(data.Database)
+	db, err := database.GetDatabase(database.ParseVersion(data.Database))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -112,7 +112,7 @@ func DropDatabaseApi(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db, err := database.GetDatabaseHandler(data.Database)
+	db, err := database.GetDatabase(database.ParseVersion(data.Database))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -123,27 +123,4 @@ func DropDatabaseApi(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, msg)
-}
-
-func CreateDatabase(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	databaseName := c.PostForm("database")
-	db := database.NewOracle12()
-	msg, err := db.CreateUser(username, password)
-	code := http.StatusOK
-	if err != nil {
-		code = http.StatusInternalServerError
-	}
-	c.HTML(
-		code,
-		"index.html",
-		gin.H{
-			"title":    "Database Manager",
-			"message":  msg,
-			"username": username,
-			"password": password,
-			"database": databaseName,
-		},
-	)
 }
