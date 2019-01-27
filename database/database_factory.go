@@ -8,6 +8,7 @@ import (
 const (
 	Oracle11 = 11
 	Oracle12 = 12
+	MySQL = 57
 )
 
 func GetDatabase(m int) (Database, error) {
@@ -20,6 +21,8 @@ func GetDatabase(m int) (Database, error) {
 		db := new(Oracle)
 		db.version = Oracle12
 		return db, nil
+	case MySQL:
+		return new(Mysql), nil
 	default:
 		return nil, errors.New(fmt.Sprintf("Database %d not recognized\n", m))
 	}

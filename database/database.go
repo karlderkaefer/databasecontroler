@@ -34,7 +34,6 @@ type Configuration struct {
 	Port          int
 	Instance      string
 	DriverClass   string
-	ConnectionUrl string
 }
 
 type Database interface {
