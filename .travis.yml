@@ -35,6 +35,9 @@ before_script:
 script:
   # Run all the tests with the race detector enabled
   # use short test mode to exclude oracle tests
-  - go test -v -race -short ./...
+  - go test -v -race -short -coverprofile=coverage.txt -covermode=atomic ./...
   # run a bunch of code checkers/linters in parallel
   - golangci-lint run
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
