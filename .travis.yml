@@ -2,6 +2,9 @@
 # runner instead of the slow VM-based runner.
 sudo: false
 
+services:
+  - docker
+
 language: go
 
 # Force-enable Go modules. This will be unnecessary when Go 1.12 lands.
@@ -24,6 +27,10 @@ install: true
 # Don't email me the results of the test runs.
 notifications:
   email: false
+
+# start mysql database for tests
+before_install:
+  - docker run --rm -d -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
 
 # Anything in before_script that returns a nonzero exit code will flunk the
 # build and immediately stop. It's sorta like having set -e enabled in bash.
