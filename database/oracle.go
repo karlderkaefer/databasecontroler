@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-goracle/goracle"
+	_ "gopkg.in/goracle.v2"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
