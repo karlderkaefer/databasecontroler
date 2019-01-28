@@ -7,5 +7,6 @@ require (
 	github.com/golangci/golangci-lint v1.13.2 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/stretchr/testify v1.2.2
+	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/goracle.v2 v2.12.0
 )
