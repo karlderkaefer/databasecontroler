@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -24,7 +23,7 @@ func GetDatabase(m int) (Database, error) {
 	case MySQL:
 		return new(Mysql), nil
 	default:
-		return nil, errors.New(fmt.Sprintf("Database %d not recognized\n", m))
+		return nil, fmt.Errorf("Database %d not recognized\n", m)
 	}
 }
 

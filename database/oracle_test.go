@@ -48,7 +48,7 @@ func TestDropUser(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		resp, err := oracle.DropUser("testusercreate")
+		resp, _ := oracle.DropUser("testusercreate")
 		expectMessage := "user testusercreate does not exists"
 		if !strings.Contains(resp[0].Content, expectMessage) {
 			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
@@ -58,6 +58,9 @@ func TestDropUser(t *testing.T) {
 			t.Error(err)
 		}
 		resp, err = oracle.DropUser("testusercreate")
+		if err != nil {
+			t.Error(err)
+		}
 		expectMessage = "user dropped testusercreate"
 		if resp[0].Content != expectMessage {
 			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
@@ -75,13 +78,15 @@ func TestListUsers(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-
 		oracle.DropUser("user1")
 		oracle.DropUser("user2")
 		oracle.CreateUser("user1", "testpass")
 		oracle.CreateUser("user2", "testpass")
 		expected := []SystemUser{{"USER1"}, {"USER2"}}
 		resp, err := oracle.ListUsers()
+		if err != nil {
+			t.Error(err)
+		}
 		assert.Equal(t, expected, resp, "Expecting to find two users as listed in %s", oracle)
 
 	}
