@@ -33,6 +33,8 @@ func ParseVersion(db string) int {
 		return Oracle11
 	case "oracle12":
 		return Oracle12
+	case "mysql":
+		return MySQL
 	default:
 		return 0
 	}
