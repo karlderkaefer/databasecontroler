@@ -11,6 +11,17 @@ services:
     ports:
       - 5432:5432
 
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: HelloApes66
+      MYSQL_DATABASE: seed
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --init-connect='SET NAMES UTF8;'
+#    volumes:
+#      - mysqldata:/var/lib/mysql
+    ports:
+      - 3306:3306
+
   sqlserver:
     image: microsoft/mssql-server-linux
     environment:
@@ -63,3 +74,4 @@ services:
 volumes:
   data:
   oracle12data:
+  mysqldata:

@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-goracle/goracle"
+	_ "gopkg.in/goracle.v2"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
@@ -55,9 +55,9 @@ func (db *Oracle) KillSession(username string) error {
 func (db *Oracle) DropUser(username string) ([]Message, error) {
 	var messages []Message
 	var message Message
-	err := db.KillSession(username)
+	db.KillSession(username)
 	dropUserSql := fmt.Sprintf("drop user %s cascade", username)
-	_, err = db.Execute(dropUserSql)
+	_, err := db.Execute(dropUserSql)
 	if err != nil {
 		if strings.Contains(err.Error(), "ORA-01918") {
 			message = Message{

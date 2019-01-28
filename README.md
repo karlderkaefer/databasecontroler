@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/karlderkaefer/databasecontroler.png)](https://travis-ci.org/karlderkaefer/databasecontroler)
+[![codecov](https://codecov.io/gh/karlderkaefer/databasecontroler/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasecontroler)
 ## Database Controler 
 
 ### Docker images for database
