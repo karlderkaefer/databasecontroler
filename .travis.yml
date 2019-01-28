@@ -1,4 +1,4 @@
-sudo: true
+sudo: false
 
 services:
   - docker
@@ -26,7 +26,6 @@ notifications:
 # Make sure golangci-lint is vendored.
 before_script:
   - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.13.2
-  - sudo /etc/init.d/mysql stop
   - docker run --rm -d -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
 
 # script always runs to completion (set +e). If we have linter issues AND a
