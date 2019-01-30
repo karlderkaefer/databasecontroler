@@ -56,3 +56,30 @@ type DatabaseApi interface {
 }
 
 
+func addError(messages []Message, err error) ([]Message, error) {
+	message := Message{
+		Severity: Error,
+		Content:  err.Error(),
+	}
+	messages = append(messages, message)
+	return messages, err
+}
+
+func addSuccess(messages []Message, content string) ([]Message, error) {
+	message := Message{
+		Severity: Success,
+		Content:  content,
+	}
+	messages = append(messages, message)
+	return messages, nil
+}
+
+func addWarn(messages []Message, content string) ([]Message, error) {
+	message := Message{
+		Severity: Warn,
+		Content:  content,
+	}
+	messages = append(messages, message)
+	return messages, nil
+}
+
