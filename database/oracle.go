@@ -54,47 +54,21 @@ func (db *Oracle) KillSession(username string) error {
 
 func (db *Oracle) DropUser(username string) ([]Message, error) {
 	var messages []Message
-	var message Message
 	db.KillSession(username)
 	dropUserSql := fmt.Sprintf("drop user %s cascade", username)
 	_, err := db.Execute(dropUserSql)
 	if err != nil {
 		if strings.Contains(err.Error(), "ORA-01918") {
-			message = Message{
-				Severity: Warn,
-				Content:  fmt.Sprintf("user %s does not exists: %s", username, err.Error()),
-			}
-			messages = append(messages, message)
-			return messages, nil
+			message := fmt.Sprintf("user %s does not exists: %s", username, err.Error())
+			return addWarn(messages, message), nil
 		}
-		message = Message{
-			Severity: Error,
-			Content:  err.Error(),
-		}
-		messages = append(messages, message)
-		return messages, err
+		return addError(messages, err)
 	}
-	message = Message{
-		Severity: Success,
-		Content:  "user dropped " + username,
-	}
-	messages = append(messages, message)
-	return messages, nil
+	return addSuccess(messages, "user dropped " + username)
 }
 
 func (db *Oracle) RecreateUser(username string, password string) ([]Message, error) {
-	messages := make([]Message, 0)
-	msg, err := db.DropUser(username)
-	if err != nil {
-		return nil, err
-	}
-	messages = append(messages, msg...)
-	msg, err = db.CreateUser(username, password)
-	if err != nil {
-		return messages, err
-	}
-	messages = append(messages, msg...)
-	return messages, nil
+	return recreateUser(db, username, password)
 }
 
 func (db *Oracle) ListUsers() ([]SystemUser, error) {
@@ -124,44 +98,21 @@ func (db *Oracle) ListUsers() ([]SystemUser, error) {
 
 func (db *Oracle) CreateUser(username string, password string) ([]Message, error) {
 	messages := make([]Message, 0)
-	var message Message
 	createUserSql := fmt.Sprintf("create user %s identified by %s", username, password)
 	_, err := db.Execute(createUserSql)
 	if err != nil {
 		// user already exists
 		if strings.Contains(err.Error(), "ORA-01920") {
-			message = Message{
-				Severity: Warn,
-				Content:  fmt.Sprintf("user %s already exists: %s", username, err.Error()),
-			}
-			messages = append(messages, message)
-			return messages, nil
-		} else {
-			message = Message{
-				Severity: Error,
-				Content:  err.Error(),
-			}
-			messages = append(messages, message)
+			warning := fmt.Sprintf("user %s already exists: %s", username, err.Error())
+			return addWarn(messages, warning), nil
 		}
-		log.Print(err)
-		return messages, err
+		return addError(messages, err)
 	}
 	_, err = db.Execute(fmt.Sprintf("grant all privileges to %s", username))
 	if err != nil {
-		message := Message{
-			Severity: Error,
-			Content:  err.Error(),
-		}
-		messages = append(messages, message)
-		return messages, err
+		addError(messages, err)
 	}
-	message = Message{
-		Severity: Success,
-		Content:  "user created " + username,
-	}
-	log.Printf("user %s created", username)
-	messages = append(messages, message)
-	return messages, nil
+	return addSuccess(messages, fmt.Sprintf("user %s created", username))
 }
 
 func (db *Oracle) Connect() (*sqlx.DB, Message, error) {

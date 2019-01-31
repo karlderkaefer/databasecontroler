@@ -74,12 +74,27 @@ func addSuccess(messages []Message, content string) ([]Message, error) {
 	return messages, nil
 }
 
-func addWarn(messages []Message, content string) ([]Message, error) {
+func addWarn(messages []Message, content string) []Message {
 	message := Message{
 		Severity: Warn,
 		Content:  content,
 	}
 	messages = append(messages, message)
+	return messages
+}
+
+func recreateUser(db DatabaseApi, username string, password string) ([]Message, error) {
+	messages := make([]Message, 0)
+	msg, err := db.DropUser(username)
+	if err != nil {
+		return nil, err
+	}
+	messages = append(messages, msg...)
+	msg, err = db.CreateUser(username, password)
+	if err != nil {
+		return messages, err
+	}
+	messages = append(messages, msg...)
 	return messages, nil
 }
 

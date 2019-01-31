@@ -15,6 +15,10 @@ type SqlserverUser struct {
 	Username string `db:"name"`
 }
 
+type UserTemplate struct {
+	User string
+}
+
 func (db *Sqlserver) Config() Configuration {
 	return Configuration{
 		DriverClass: "sqlserver",
@@ -51,16 +55,6 @@ func (db *Sqlserver) Execute(command string) (Message, error) {
 	return message, err
 }
 
-func (db *Sqlserver) Batch(commands []string) error {
-	for _, command := range commands {
-		_, err := db.Execute(command)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (db *Sqlserver) ConnectionUrl() string {
 	return fmt.Sprintf("sqlserver://%s:%s@%s:%d",
 		db.Config().Username,
@@ -68,10 +62,6 @@ func (db *Sqlserver) ConnectionUrl() string {
 		db.Config().Host,
 		db.Config().Port,
 	)
-}
-
-type UserTemplate struct {
-	User string
 }
 
 func (db *Sqlserver) CreateUser(username string, password string) ([]Message, error) {
@@ -85,11 +75,9 @@ func (db *Sqlserver) CreateUser(username string, password string) ([]Message, er
 	if err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			warning := fmt.Sprintf("user %s already exists: %s", username, err.Error())
-			messages, err = addWarn(messages, warning)
-		} else {
-			messages, err = addError(messages, err)
+			return addWarn(messages, warning), nil
 		}
-		return messages, err
+		return addError(messages, err)
 	}
 	return addSuccess(messages, "user created " + username)
 }
@@ -105,28 +93,15 @@ func (db *Sqlserver) DropUser(username string) ([]Message, error) {
 	if err != nil {
 		if strings.Contains(err.Error(), "ALTER DATABASE statement failed") {
 			warning := fmt.Sprintf("user %s does not exists: %s", username, err.Error())
-			messages, err = addWarn(messages, warning)
-		} else {
-			messages, err = addError(messages, err)
+			return addWarn(messages, warning), nil
 		}
-		return messages, nil
+		return addError(messages, err)
 	}
 	return addSuccess(messages, fmt.Sprintf("user %s dropped", username))
 }
 
 func (db *Sqlserver) RecreateUser(username string, password string) ([]Message, error) {
-	messages := make([]Message, 0)
-	msg, err := db.DropUser(username)
-	if err != nil {
-		return nil, err
-	}
-	messages = append(messages, msg...)
-	msg, err = db.CreateUser(username, password)
-	if err != nil {
-		return messages, err
-	}
-	messages = append(messages, msg...)
-	return messages, nil
+	return recreateUser(db, username, password)
 }
 
 func (db *Sqlserver) ListUsers() ([]SystemUser, error) {
