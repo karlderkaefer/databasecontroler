@@ -1,15 +1,9 @@
 package database
 
 import (
-	"flag"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
-
-func init() {
-	flag.String("templates", "../config", "directory for *.tpl files contains sql scripts")
-	flag.Parse()
-}
 
 func TestSqlserver_CreateUser(t *testing.T) {
 	db, err := GetDatabase(SqlServer2017)
