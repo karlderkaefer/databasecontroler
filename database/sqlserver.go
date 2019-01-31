@@ -99,12 +99,17 @@ func (db *Sqlserver) DropUser(username string) ([]Message, error) {
 	value := &TemplateValue{User: username}
 	dropUserSql, err := LoadTemplate(*value, TemplateSqlServerDrop)
 	if err != nil {
-		return messages, nil
+		return messages, err
 	}
 	_, err = db.Execute(dropUserSql)
 	if err != nil {
-		messages, err = addError(messages, err)
-		return messages, err
+		if strings.Contains(err.Error(), "ALTER DATABASE statement failed") {
+			warning := fmt.Sprintf("user %s does not exists: %s", username, err.Error())
+			messages, err = addWarn(messages, warning)
+		} else {
+			messages, err = addError(messages, err)
+		}
+		return messages, nil
 	}
 	return addSuccess(messages, fmt.Sprintf("user %s dropped", username))
 }
