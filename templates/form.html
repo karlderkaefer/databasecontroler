@@ -7,6 +7,7 @@
           <select class="form-control" id="database" name="database">
             <option{{ if eq .database "oracle11" }} selected{{ end }}>oracle11</option>
             <option{{ if eq .database "oracle12" }} selected{{ end }}>oracle12</option>
+            <option{{ if eq .database "sqlserver2017" }} selected{{ end }}>sqlserver2017</option>
             <option{{ if eq .database "mysql" }} selected{{ end }}>mysql</option>
           </select>
         </div>
