@@ -27,6 +27,7 @@ services:
     environment:
       ACCEPT_EULA: Y
       SA_PASSWORD: HelloApes66
+      MSSQL_PID: Express
     ports:
       - 1433:1433
 

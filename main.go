@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/static"
@@ -11,6 +13,10 @@ import (
 var router *gin.Engine
 
 func main() {
+
+	flag.String("templates", "../config", "directory for *.tpl files contains sql scripts")
+	port := flag.Int("port", 3000, "port server is listening to")
+	flag.Parse()
 
 	// Set the router as the default one provided by Gin
 	router = gin.Default()
@@ -25,7 +31,7 @@ func main() {
 	initializeRoutes()
 
 	// Start serving the application
-	router.Run(":3000")
+	router.Run(fmt.Sprintf(":%d", *port))
 }
 
 func initializeRoutes() {

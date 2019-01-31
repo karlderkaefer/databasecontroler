@@ -56,3 +56,45 @@ type DatabaseApi interface {
 }
 
 
+func addError(messages []Message, err error) ([]Message, error) {
+	message := Message{
+		Severity: Error,
+		Content:  err.Error(),
+	}
+	messages = append(messages, message)
+	return messages, err
+}
+
+func addSuccess(messages []Message, content string) ([]Message, error) {
+	message := Message{
+		Severity: Success,
+		Content:  content,
+	}
+	messages = append(messages, message)
+	return messages, nil
+}
+
+func addWarn(messages []Message, content string) []Message {
+	message := Message{
+		Severity: Warn,
+		Content:  content,
+	}
+	messages = append(messages, message)
+	return messages
+}
+
+func recreateUser(db DatabaseApi, username string, password string) ([]Message, error) {
+	messages := make([]Message, 0)
+	msg, err := db.DropUser(username)
+	if err != nil {
+		return nil, err
+	}
+	messages = append(messages, msg...)
+	msg, err = db.CreateUser(username, password)
+	if err != nil {
+		return messages, err
+	}
+	messages = append(messages, msg...)
+	return messages, nil
+}
+

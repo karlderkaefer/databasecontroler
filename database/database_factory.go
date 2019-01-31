@@ -8,6 +8,7 @@ const (
 	Oracle11 = 11
 	Oracle12 = 12
 	MySQL = 57
+	SqlServer2017 = 17
 )
 
 func GetDatabase(m int) (Database, error) {
@@ -22,6 +23,8 @@ func GetDatabase(m int) (Database, error) {
 		return db, nil
 	case MySQL:
 		return new(Mysql), nil
+	case SqlServer2017:
+		return new(Sqlserver), nil
 	default:
 		return nil, fmt.Errorf("Database %d not recognized\n", m)
 	}
@@ -35,6 +38,8 @@ func ParseVersion(db string) int {
 		return Oracle12
 	case "mysql":
 		return MySQL
+	case "sqlserver2017":
+		return SqlServer2017
 	default:
 		return 0
 	}
