@@ -32,14 +32,30 @@ services:
       - 1433:1433
 
   db2:
-    image: ibmcom/db2express-c:10.5.0.5-3.10.0
+    image: ibmcom/db2express-c:latest
     environment:
-      DB2INST1_PASSWORD: HelloApes66
       LICENSE: accept
-    command:
-      - "db2start"
+      DB2INST1_PASSWORD: HelloApes66
+#    entrypoint: /entrypoint.sh
+    command: db2start
     ports:
       - 50000:50000
+      - 55000:55000
+    volumes:
+#      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
+      - db2data:/share
+
+  db2remote:
+    image: ibmcom/db2express-c:latest
+    environment:
+      LICENSE: accept
+      DB2INST1_PASSWORD: HelloApes66
+    command: db2start
+    ports:
+      - 50000
+      - 55000
+    volumes:
+      - db2dataremote:/share
 
   oracle11:
     image: oracle/database:11.2.0.2-xe
@@ -76,3 +92,5 @@ volumes:
   data:
   oracle12data:
   mysqldata:
+  db2data:
+  db2dataremote:

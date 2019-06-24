@@ -15,10 +15,6 @@ type SqlserverUser struct {
 	Username string `db:"name"`
 }
 
-type UserTemplate struct {
-	User string
-}
-
 func (db *Sqlserver) Config() Configuration {
 	return Configuration{
 		DriverClass: "sqlserver",
@@ -79,7 +75,7 @@ func (db *Sqlserver) CreateUser(username string, password string) ([]Message, er
 		}
 		return addError(messages, err)
 	}
-	return addSuccess(messages, "user created " + username)
+	return addSuccess(messages, "user created "+username)
 }
 
 func (db *Sqlserver) DropUser(username string) ([]Message, error) {

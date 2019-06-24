@@ -20,6 +20,10 @@ type SystemUser struct {
 	Username string `json:"username"`
 }
 
+type UserTemplate struct {
+	User string
+}
+
 type Response struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -28,12 +32,12 @@ type Response struct {
 }
 
 type Configuration struct {
-	Host          string
-	Username      string
-	Password      string
-	Port          int
-	Instance      string
-	DriverClass   string
+	Host        string
+	Username    string
+	Password    string
+	Port        int
+	Instance    string
+	DriverClass string
 }
 
 type Database interface {
@@ -54,7 +58,6 @@ type DatabaseApi interface {
 	RecreateUser(username string, password string) ([]Message, error)
 	ListUsers() ([]SystemUser, error)
 }
-
 
 func addError(messages []Message, err error) ([]Message, error) {
 	message := Message{
@@ -97,4 +100,3 @@ func recreateUser(db DatabaseApi, username string, password string) ([]Message, 
 	messages = append(messages, msg...)
 	return messages, nil
 }
-
