@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	_ "github.com/ibmdb/go_ibm_db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"log"
