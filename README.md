@@ -13,6 +13,9 @@ Start database with `docker-compose up -d oracle11 oracle12`
 go get github.com/karlderkaefer/databasecontroler
 cd $GOPATH/src/github.com/karlderkaefer/databasecontroler
 go run main.go
+# in developing mode you can use fresh
+go get github.com/pilu/fresh
+fresh
 ```
 
 ### DB2

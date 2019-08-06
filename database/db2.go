@@ -1,11 +1,13 @@
 package database
 
 import (
+	"fmt"
 	_ "github.com/ibmdb/go_ibm_db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"log"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -54,7 +56,7 @@ func (db *Db2) Execute(command string) (Message, error) {
 		Severity: Info,
 		Content:  string(out),
 	}
-	log.Printf("%v", out)
+	log.Printf("%s", out)
 	return message, nil
 }
 
@@ -64,23 +66,51 @@ func (db *Db2) ConnectionUrl() string {
 
 func (db *Db2) CreateUser(username string, password string) ([]Message, error) {
 	var messages []Message
-	msg, err := db.Execute("create database " + username)
+	msg, err := db.Execute(fmt.Sprintf("create database %s PAGESIZE 16384", username))
 	if err != nil {
-		addError(messages, err)
-		return messages, err
+		if strings.Contains(err.Error(), "SQL1005N") {
+			return addError(messages, &UserAlreadyExistsError{username, "Cannot create user."})
+		} else {
+			return addError(messages, err)
+		}
 	}
-	addSuccess(messages, msg.Content)
-	return messages, nil
+	return addSuccess(messages, msg.Content)
 }
 
 func (db *Db2) DropUser(username string) ([]Message, error) {
-	return []Message{}, errors.New("not implemented")
+	var messages []Message
+	db.Execute("catalog database " + username)
+	msg, err := db.Execute("drop database " + username)
+	db.Execute("uncatalog database " + username)
+	if err != nil {
+		if strings.Contains(err.Error(), "SQL1013N") {
+			warning := fmt.Sprintf("user %s does not exist: %s", username, err.Error())
+			return addWarn(messages, warning), nil
+		}
+		return addError(messages, err)
+	}
+	return addSuccess(messages, fmt.Sprintf("user %s dropped: %s", username, msg.Content))
 }
 
 func (db *Db2) RecreateUser(username string, password string) ([]Message, error) {
-	return []Message{}, errors.New("not implemented")
+	return recreateUser(db, username, password)
 }
 
 func (db *Db2) ListUsers() ([]SystemUser, error) {
-	return []SystemUser{}, errors.New("not implemented")
+	msg, err := db.Execute("list database directory")
+	if err != nil {
+		return nil, err
+	}
+	return db.ParseDatabaseDirectoryList(msg.Content), nil
+}
+
+func (db *Db2) ParseDatabaseDirectoryList(input string) []SystemUser {
+	var users []SystemUser
+	regex := regexp.MustCompile(`(?m)Database name\s+=\s+(?P<Name>\w+)`)
+	found := regex.FindAllStringSubmatch(input, -1)
+	for _, name := range found {
+		user := &SystemUser{strings.ToLower(name[1])}
+		users = append(users, *user)
+	}
+	return users
 }
