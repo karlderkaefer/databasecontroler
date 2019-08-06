@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/karlderkaefer/databasecontroler.png)](https://travis-ci.org/karlderkaefer/databasecontroler)
-[![codecov](https://codecov.io/gh/karlderkaefer/databasecontroler/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasecontroler)
+[![Build Status](https://travis-ci.org/karlderkaefer/databasemanager.png)](https://travis-ci.org/karlderkaefer/databasemanager)
+[![codecov](https://codecov.io/gh/karlderkaefer/databasemanager/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasemanager)
 ## Database Controler 
 
 ### Docker images for database
@@ -10,8 +10,8 @@ Start database with `docker-compose up -d oracle11 oracle12`
 
 ### Run
 ```bash
-go get github.com/karlderkaefer/databasecontroler
-cd $GOPATH/src/github.com/karlderkaefer/databasecontroler
+go get github.com/karlderkaefer/databasemanager
+cd $GOPATH/src/github.com/karlderkaefer/databasemanager
 go run main.go
 # in developing mode you can use fresh
 go get github.com/pilu/fresh

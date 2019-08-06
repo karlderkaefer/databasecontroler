@@ -1,8 +1,7 @@
-module github.com/karlderkaefer/databasecontroler
+module github.com/karlderkaefer/databasemanager
 
 require (
 	cloud.google.com/go v0.35.1 // indirect
-	github.com/asifjalil/cli v1.2.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20190121005146-b04fd42d9952
 	github.com/gin-contrib/static v0.0.0-20181225054800-cf5e10bbd933
 	github.com/gin-gonic/gin v1.3.0
@@ -18,5 +17,4 @@ require (
 	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/goracle.v2 v2.12.0
-	gotest.tools v2.2.0+incompatible // indirect
 )
