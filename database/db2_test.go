@@ -22,7 +22,7 @@ func TestDb2_CreateUser(t *testing.T) {
 	assert.Equal(t, msg[0].Severity, Success)
 	assert.Contains(t, msg[0].Content, "CREATE DATABASE command completed successfully")
 
-	msg, err = db.CreateUser("test2", "test2")
+	_, err = db.CreateUser("test2", "test2")
 	assert.IsType(t, err, new(UserAlreadyExistsError))
 }
 
@@ -48,8 +48,6 @@ func TestDb2_DropUser(t *testing.T) {
 	}
 	assert.Equal(t, msg[0].Severity, Success)
 	assert.Contains(t, msg[0].Content, "user test3 dropped")
-	msg, err = db.DropUser("test3")
-	log.Printf("%v", msg)
 }
 
 func TestDb2_CreateDb2Command(t *testing.T) {
