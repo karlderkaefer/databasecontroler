@@ -43,12 +43,12 @@ before_script:
   - ln -s $ORACLE_CLIENT/libclntsh.so.12.1 libclntsh.so
   - ln -s $ORACLE_CLIENT/libocci.so.12.1 libocci.so.12.1
   - WAIT_TIME=0
-  - while [[ "$(docker inspect -f {{.State.Health.Status}} oracle11)" != "healthy" && "$WAIT_TIMEOUT" -lt 300 ]]; do sleep 1; ((WAIT_TIMEOUT++));echo waiting for oracle11 to be healthy; done;
+  - while [[ "$(docker inspect -f {{.State.Health.Status}} oracle11)" != "healthy" && "$WAIT_TIMEOUT" -lt 300 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for oracle11 to be healthy; done;
 
   - docker logs oracle11
   # make oracle db available from other hosts
   - docker exec oracle11 sed -i -E "s/(HOST = )(.*)(\)\(.*)/\10.0.0.0\3/" /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
-  - docker exec oracle cat /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
+  - docker exec oracle11 cat /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
 # .golangci.yml file at the top level of your repo.
