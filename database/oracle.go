@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "gopkg.in/goracle.v2"
+	_ "github.com/godror/godror"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
@@ -59,12 +59,12 @@ func (db *Oracle) DropUser(username string) ([]Message, error) {
 	_, err := db.Execute(dropUserSql)
 	if err != nil {
 		if strings.Contains(err.Error(), "ORA-01918") {
-			message := fmt.Sprintf("user %s does not exists: %s", username, err.Error())
+			message := fmt.Sprintf(UserNotExists, username, err.Error())
 			return addWarn(messages, message), nil
 		}
 		return addError(messages, err)
 	}
-	return addSuccess(messages, "user dropped " + username)
+	return addSuccess(messages, fmt.Sprintf(UserDropped, username))
 }
 
 func (db *Oracle) RecreateUser(username string, password string) ([]Message, error) {
@@ -103,16 +103,17 @@ func (db *Oracle) CreateUser(username string, password string) ([]Message, error
 	if err != nil {
 		// user already exists
 		if strings.Contains(err.Error(), "ORA-01920") {
-			warning := fmt.Sprintf("user %s already exists: %s", username, err.Error())
+			warning := fmt.Sprintf(UserAlreadyExists, username, err.Error())
 			return addWarn(messages, warning), nil
 		}
+		log.Print(err)
 		return addError(messages, err)
 	}
 	_, err = db.Execute(fmt.Sprintf("grant all privileges to %s", username))
 	if err != nil {
 		addError(messages, err)
 	}
-	return addSuccess(messages, fmt.Sprintf("user %s created", username))
+	return addSuccess(messages, fmt.Sprintf(UserCreated, username))
 }
 
 func (db *Oracle) Connect() (*sqlx.DB, Message, error) {
@@ -154,7 +155,7 @@ func (db *Oracle) Config() Configuration {
 	switch db.version {
 	case Oracle11:
 		return Configuration{
-			DriverClass: "goracle",
+			DriverClass: "godror",
 			Host:        "localhost",
 			Instance:    "xe",
 			Password:    "HelloApes66",
@@ -163,7 +164,7 @@ func (db *Oracle) Config() Configuration {
 		}
 	case Oracle12:
 		return Configuration{
-			DriverClass: "goracle",
+			DriverClass: "godror",
 			Host:        "localhost",
 			Instance:    "ORCLPDB1",
 			Password:    "HelloApes66",

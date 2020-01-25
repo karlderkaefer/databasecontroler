@@ -3,10 +3,14 @@ package database
 import "github.com/jmoiron/sqlx"
 
 const (
-	Success Severity = "success"
-	Info    Severity = "info"
-	Warn    Severity = "warning"
-	Error   Severity = "danger"
+	Success           Severity = "success"
+	Info              Severity = "info"
+	Warn              Severity = "warning"
+	Error             Severity = "danger"
+	UserCreated       string   = "user %s created"
+	UserAlreadyExists string   = "user %s already exists: %s"
+	UserNotExists     string   = "user %s does not exists: %s"
+	UserDropped       string   = "user %s has been dropped"
 )
 
 type Severity string

@@ -10,6 +10,10 @@ language: go
 go:
   - 1.13.x
 
+cache:
+  directories:
+    - $GOPATH/pkg/mod
+
 env:
   - GO111MODULE=on
 
@@ -31,6 +35,15 @@ before_script:
   - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
   - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
   - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
+  # oracle client driver
+  - docker run -d --rm --name client karlderkaefer/private:oracleclient12
+  - docker cp client:/opt/oracle /opt
+  - export ORACLE_CLIENT=/opt/oracle/instantclient_12_2
+  - export LD_LIBRARY_PATH=~/instantclient_12_2:$LD_LIBRARY_PATH
+  - sudo apt update
+  - sudo apt install libaio1
+  - ln -s $ORACLE_CLIENT/libclntsh.so.12.1 libclntsh.so
+  - ln -s $ORACLE_CLIENT/libocci.so.12.1 libocci.so.12.1
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
 # .golangci.yml file at the top level of your repo.
