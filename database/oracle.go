@@ -81,7 +81,7 @@ func (db *Oracle) ListUsers() ([]SystemUser, error) {
 	var sql string
 	switch db.version {
 	case 11:
-		sql = "SELECT USERNAME, USER_ID FROM dba_users WHERE USER_ID > 47 AND USER_ID < 1000000 AND INITIAL_RSRC_CONSUMER_GROUP = 'DEFAULT_CONSUMER_GROUP'"
+		sql = "SELECT USERNAME, USER_ID FROM dba_users WHERE USER_ID > 47 AND USER_ID < 1000000 AND INITIAL_RSRC_CONSUMER_GROUP = 'DEFAULT_CONSUMER_GROUP' ORDER BY USERNAME"
 	case 12:
 		sql = "SELECT username, user_id FROM dba_users WHERE ORACLE_MAINTAINED = 'N' AND username != 'PDBADMIN' ORDER BY username"
 	}
