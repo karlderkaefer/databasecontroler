@@ -62,8 +62,8 @@ services:
     shm_size: 1g
     environment:
       ORACLE_PWD: HelloApes66
-    volumes:
-      - ./oradata:/opt/oracle/oradata
+#    volumes:
+#      - ./oradata:/opt/oracle/oradata
     ports:
       - 1521:1521
       - 8080
