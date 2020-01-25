@@ -37,11 +37,9 @@ before_script:
   - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
   # oracle client driver
   - docker run -d --rm --name client karlderkaefer/private:oracleclient12
-  - docker cp client:/opt/oracle /opt
+  - docker cp client:/opt/oracle /opt/
   - export ORACLE_CLIENT=/opt/oracle/instantclient_12_2
-  - export LD_LIBRARY_PATH=~/instantclient_12_2:$LD_LIBRARY_PATH
-  - sudo apt update
-  - sudo apt install libaio1
+  - export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
   - ln -s $ORACLE_CLIENT/libclntsh.so.12.1 libclntsh.so
   - ln -s $ORACLE_CLIENT/libocci.so.12.1 libocci.so.12.1
 # script always runs to completion (set +e). If we have linter issues AND a
