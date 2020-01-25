@@ -67,14 +67,18 @@ func TestListUsers(t *testing.T) {
 		testPassword := "testpass"
 		oracle, err := GetDatabase(oracleVersion)
 		assert.Nil(t, err)
-		oracle.DropUser(testUser1)
-		oracle.DropUser(testUser2)
-		oracle.CreateUser(testUser1, testPassword)
-		oracle.CreateUser(testUser2, testPassword)
-		expected := []SystemUser{{"USER1"}, {"USER2"}}
-		resp, err := oracle.ListUsers()
+		_, _ = oracle.DropUser(testUser1)
+		_, _ = oracle.DropUser(testUser2)
+		resp, err := oracle.CreateUser(testUser1, testPassword)
+		t.Log(resp)
 		assert.Nil(t, err)
-		assert.Equal(t, expected, resp, "Expecting to find two users as listed in %s", oracle)
+		resp, err = oracle.CreateUser(testUser2, testPassword)
+		t.Log(resp)
+		assert.Nil(t, err)
+		expected := []SystemUser{{"USER1"}, {"USER2"}}
+		users, err := oracle.ListUsers()
+		assert.Nil(t, err)
+		assert.Equal(t, expected, users, "Expecting to find two users as listed in %v", users)
 
 	}
 }
