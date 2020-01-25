@@ -7,10 +7,8 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
+	//oracleVersions := []int{Oracle11, Oracle12}
+	oracleVersions := []int{Oracle11}
 	for _, oracleVersion := range oracleVersions {
 		oracle, err := GetDatabase(oracleVersion)
 		if err != nil {
@@ -39,10 +37,8 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestDropUser(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
+	//oracleVersions := []int{Oracle11, Oracle12}
+	oracleVersions := []int{Oracle11}
 	for _, oracleVersion := range oracleVersions {
 		oracle, err := GetDatabase(oracleVersion)
 		if err != nil {
@@ -69,10 +65,8 @@ func TestDropUser(t *testing.T) {
 }
 
 func TestListUsers(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
+	//oracleVersions := []int{Oracle11, Oracle12}
+	oracleVersions := []int{Oracle11}
 	for _, oracleVersion := range oracleVersions {
 		oracle, err := GetDatabase(oracleVersion)
 		if err != nil {
