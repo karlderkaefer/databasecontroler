@@ -8,7 +8,7 @@ language: go
 # You don't need to test on very old version of the Go compiler. It's the user's
 # responsibility to keep their compilers up to date.
 go:
-  - 1.11.x
+  - 1.13.x
 
 env:
   - GO111MODULE=on
@@ -28,9 +28,9 @@ before_script:
   - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.13.2
   - sudo /etc/init.d/mysql stop
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker run -d --rm -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
-  - docker run -d --rm -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
-  - docker run -d --rm --shm-size=256m -e ORACLE_PWD=HelloApes66 -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
+  - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
+  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
+  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
 # .golangci.yml file at the top level of your repo.
