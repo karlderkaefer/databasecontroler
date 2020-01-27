@@ -3,22 +3,23 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	// driver is only needed on runtime not on compile time
 	_ "github.com/godror/godror"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
 )
 
-type Oracle struct {
+type oracleDatabase struct {
 	version int
 }
 
-type OracleUser struct {
+type oracleUser struct {
 	Username string `db:"USERNAME"`
 	Userid   string `db:"USER_ID"`
 }
 
-func (db *Oracle) KillSession(username string) error {
+func (db *oracleDatabase) killSession(username string) error {
 	var sid sql.NullString
 	var serial sql.NullString
 	con, _, err := db.Connect()
@@ -52,11 +53,11 @@ func (db *Oracle) KillSession(username string) error {
 	return nil
 }
 
-func (db *Oracle) DropUser(username string) ([]Message, error) {
+func (db *oracleDatabase) DropUser(username string) ([]Message, error) {
 	var messages []Message
-	db.KillSession(username)
-	dropUserSql := fmt.Sprintf("drop user %s cascade", username)
-	_, err := db.Execute(dropUserSql)
+	db.killSession(username)
+	dropUserSQL := fmt.Sprintf("drop user %s cascade", username)
+	_, err := db.Execute(dropUserSQL)
 	if err != nil {
 		if strings.Contains(err.Error(), "ORA-01918") {
 			message := fmt.Sprintf(UserNotExists, username, err.Error())
@@ -67,17 +68,17 @@ func (db *Oracle) DropUser(username string) ([]Message, error) {
 	return addSuccess(messages, fmt.Sprintf(UserDropped, username))
 }
 
-func (db *Oracle) RecreateUser(username string, password string) ([]Message, error) {
+func (db *oracleDatabase) RecreateUser(username string, password string) ([]Message, error) {
 	return recreateUser(db, username, password)
 }
 
-func (db *Oracle) ListUsers() ([]SystemUser, error) {
+func (db *oracleDatabase) ListUsers() ([]SystemUser, error) {
 	con, _, err := db.Connect()
 	if err != nil {
 		return nil, err
 	}
 	defer con.Close()
-	var oracleUsers []OracleUser
+	var oracleUsers []oracleUser
 	var sql string
 	switch db.version {
 	case 11:
@@ -96,10 +97,10 @@ func (db *Oracle) ListUsers() ([]SystemUser, error) {
 	return users, nil
 }
 
-func (db *Oracle) CreateUser(username string, password string) ([]Message, error) {
+func (db *oracleDatabase) CreateUser(username string, password string) ([]Message, error) {
 	messages := make([]Message, 0)
-	createUserSql := fmt.Sprintf("create user %s identified by %s", username, password)
-	_, err := db.Execute(createUserSql)
+	createUserSQL := fmt.Sprintf("create user %s identified by %s", username, password)
+	_, err := db.Execute(createUserSQL)
 	if err != nil {
 		// user already exists
 		if strings.Contains(err.Error(), "ORA-01920") {
@@ -116,9 +117,9 @@ func (db *Oracle) CreateUser(username string, password string) ([]Message, error
 	return addSuccess(messages, fmt.Sprintf(UserCreated, username))
 }
 
-func (db *Oracle) Connect() (*sqlx.DB, Message, error) {
+func (db *oracleDatabase) Connect() (*sqlx.DB, Message, error) {
 	var message Message
-	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionUrl())
+	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionURL())
 	if err != nil {
 		message = Message{
 			Severity: Error,
@@ -130,7 +131,7 @@ func (db *Oracle) Connect() (*sqlx.DB, Message, error) {
 	return con, Message{}, err
 }
 
-func (db *Oracle) Execute(command string) (Message, error) {
+func (db *oracleDatabase) Execute(command string) (Message, error) {
 	var message Message
 	con, message, err := db.Connect()
 	if err != nil {
@@ -141,7 +142,7 @@ func (db *Oracle) Execute(command string) (Message, error) {
 	return message, err
 }
 
-func (db *Oracle) ConnectionUrl() string {
+func (db *oracleDatabase) ConnectionURL() string {
 	return fmt.Sprintf(
 		"%s/%s@%s:%d/%s",
 		db.Config().Username,
@@ -151,10 +152,10 @@ func (db *Oracle) ConnectionUrl() string {
 		db.Config().Instance)
 }
 
-func (db *Oracle) Config() Configuration {
+func (db *oracleDatabase) Config() configuration {
 	switch db.version {
-	case Oracle11:
-		return Configuration{
+	case oracle11:
+		return configuration{
 			DriverClass: "godror",
 			Host:        "localhost",
 			Instance:    "xe",
@@ -162,8 +163,8 @@ func (db *Oracle) Config() Configuration {
 			Port:        1521,
 			Username:    "system",
 		}
-	case Oracle12:
-		return Configuration{
+	case oracle12:
+		return configuration{
 			DriverClass: "godror",
 			Host:        "localhost",
 			Instance:    "ORCLPDB1",
@@ -172,6 +173,6 @@ func (db *Oracle) Config() Configuration {
 			Username:    "system",
 		}
 	default:
-		return Configuration{}
+		return configuration{}
 	}
 }

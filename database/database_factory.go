@@ -1,50 +1,51 @@
 package database
 
-import (
-	"fmt"
-)
+import "fmt"
 
 const (
-	Oracle11      = 11
-	Oracle12      = 12
-	MySQL         = 57
-	SqlServer2017 = 17
-	Db2105        = 105
+	oracle11      = 11
+	oracle12      = 12
+	mysql         = 57
+	sqlserver2017 = 17
+	db2105        = 105
 )
 
+// GetDatabase is used get the API of the requested database
 func GetDatabase(m int) (Database, error) {
 	switch m {
-	case Oracle11:
-		db := new(Oracle)
-		db.version = Oracle11
+	case oracle11:
+		db := new(oracleDatabase)
+		db.version = oracle11
 		return db, nil
-	case Oracle12:
-		db := new(Oracle)
-		db.version = Oracle12
+	case oracle12:
+		db := new(oracleDatabase)
+		db.version = oracle12
 		return db, nil
-	case MySQL:
-		return new(Mysql), nil
-	case SqlServer2017:
-		return new(Sqlserver), nil
-	case Db2105:
-		return new(Db2), nil
+	case mysql:
+		return new(mysqlDatabase), nil
+	case sqlserver2017:
+		return new(sqlserverDatabase), nil
+	case db2105:
+		return new(db2), nil
 	default:
-		return nil, fmt.Errorf("Database %d not recognized\n", m)
+		return nil, fmt.Errorf("database %d not recognized", m)
 	}
 }
 
+// ParseVersion will parse the input and return a suitable database.
+// returns 0 if database is not registered.
 func ParseVersion(db string) int {
 	switch db {
 	case "oracle11":
-		return Oracle11
+		return oracle11
 	case "oracle12":
-		return Oracle12
+		return oracle12
 	case "mysql":
-		return MySQL
+		return mysql
 	case "sqlserver2017":
-		return SqlServer2017
+		return sqlserver2017
 	case "db2":
-		return Db2105
+		return db2105
 	default:
 		return 0
 	}

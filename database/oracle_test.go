@@ -7,7 +7,7 @@ import (
 )
 
 func oracleVersions() []int {
-	return []int{Oracle11}
+	return []int{oracle11}
 }
 
 func TestCreateUser(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 )
 
 func TestMysql_CreateUser(t *testing.T) {
-	db, err := GetDatabase(MySQL)
+	db, err := GetDatabase(mysql)
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,7 +28,7 @@ func TestMysql_CreateUser(t *testing.T) {
 }
 
 func TestMysql_DropUser(t *testing.T) {
-	db, err := GetDatabase(MySQL)
+	db, err := GetDatabase(mysql)
 	if err != nil {
 		t.Error(err)
 	}
@@ -53,7 +53,7 @@ func TestMysql_DropUser(t *testing.T) {
 }
 
 func TestMysql_ListUsers(t *testing.T) {
-	db, err := GetDatabase(MySQL)
+	db, err := GetDatabase(mysql)
 	if err != nil {
 		t.Error(err)
 	}

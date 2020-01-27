@@ -8,17 +8,17 @@ import (
 	"text/template"
 )
 
-type TemplateValue struct {
-	User string
+type templateValue struct {
+	User     string
 	Password string
 }
 
 const (
-	TemplateSqlServerCreate = "sqlserver-create.tpl"
-	TemplateSqlServerDrop = "sqlserver-drop.tpl"
+	templateSQLServerCreate = "sqlserver-create.tpl"
+	templateSQLServerDrop   = "sqlserver-drop.tpl"
 )
 
-func LoadTemplate(value TemplateValue, templateName string) (string, error){
+func loadTemplate(value templateValue, templateName string) (string, error) {
 	path := flag.Lookup("templates").Value.(flag.Getter).Get().(string)
 	templateFile := fmt.Sprintf("%s/%s", path, templateName)
 	log.Printf("loading template from %s", templateFile)

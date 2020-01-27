@@ -6,7 +6,7 @@ import (
 )
 
 func TestSqlserver_CreateUser(t *testing.T) {
-	db, err := GetDatabase(SqlServer2017)
+	db, err := GetDatabase(sqlserver2017)
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,7 +28,7 @@ func TestSqlserver_CreateUser(t *testing.T) {
 }
 
 func TestSqlserver_DropUser(t *testing.T) {
-	db, err := GetDatabase(SqlServer2017)
+	db, err := GetDatabase(sqlserver2017)
 	if err != nil {
 		t.Error(err)
 	}
@@ -53,7 +53,7 @@ func TestSqlserver_DropUser(t *testing.T) {
 }
 
 func TestSqlserver_ListUsers(t *testing.T) {
-	db, err := GetDatabase(SqlServer2017)
+	db, err := GetDatabase(sqlserver2017)
 	if err != nil {
 		t.Error(err)
 	}
@@ -68,5 +68,3 @@ func TestSqlserver_ListUsers(t *testing.T) {
 	}
 	assert.Equal(t, expected, resp, "Expecting to find two users as listed in %s", db.Config().DriverClass)
 }
-
-

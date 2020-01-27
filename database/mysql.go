@@ -2,21 +2,22 @@ package database
 
 import (
 	"fmt"
+	// driver is only needed on runtime not on compile time
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strings"
 )
 
-type Mysql struct {
+type mysqlDatabase struct {
 }
 
-type MysqlUser struct {
+type mysqlUser struct {
 	Username string `db:"User"`
 }
 
-func (db *Mysql) Config() Configuration {
-	return Configuration{
+func (db *mysqlDatabase) Config() configuration {
+	return configuration{
 		DriverClass: "mysql",
 		Host:        "localhost",
 		Port:        3306,
@@ -26,9 +27,9 @@ func (db *Mysql) Config() Configuration {
 	}
 }
 
-func (db *Mysql) Connect() (*sqlx.DB, Message, error) {
+func (db *mysqlDatabase) Connect() (*sqlx.DB, Message, error) {
 	var message Message
-	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionUrl())
+	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionURL())
 	if err != nil {
 		message = Message{
 			Severity: Error,
@@ -40,7 +41,7 @@ func (db *Mysql) Connect() (*sqlx.DB, Message, error) {
 	return con, Message{}, err
 }
 
-func (db *Mysql) Execute(command string) (Message, error) {
+func (db *mysqlDatabase) Execute(command string) (Message, error) {
 	var message Message
 	con, message, err := db.Connect()
 	if err != nil {
@@ -51,7 +52,7 @@ func (db *Mysql) Execute(command string) (Message, error) {
 	return message, err
 }
 
-func (db *Mysql) ConnectionUrl() string {
+func (db *mysqlDatabase) ConnectionURL() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?multiStatements=true",
 		db.Config().Username,
 		db.Config().Password,
@@ -61,10 +62,10 @@ func (db *Mysql) ConnectionUrl() string {
 	)
 }
 
-func (db *Mysql) CreateUser(username string, password string) ([]Message, error) {
+func (db *mysqlDatabase) CreateUser(username string, password string) ([]Message, error) {
 	var messages []Message
-	createUserSql := fmt.Sprintf("CREATE USER %s IDENTIFIED BY '%s';", username, password)
-	_, err := db.Execute(createUserSql)
+	createUserSQL := fmt.Sprintf("CREATE USER %s IDENTIFIED BY '%s';", username, password)
+	_, err := db.Execute(createUserSQL)
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1396") {
 			warning := fmt.Sprintf("user %s already exists: %s", username, err.Error())
@@ -72,8 +73,8 @@ func (db *Mysql) CreateUser(username string, password string) ([]Message, error)
 		}
 		return addError(messages, err)
 	}
-	createDatabaseSql := fmt.Sprintf("CREATE DATABASE %s;", username)
-	_, err = db.Execute(createDatabaseSql)
+	createDatabaseSQL := fmt.Sprintf("CREATE DATABASE %s;", username)
+	_, err = db.Execute(createDatabaseSQL)
 	if err != nil {
 		return addError(messages, err)
 	}
@@ -82,13 +83,13 @@ func (db *Mysql) CreateUser(username string, password string) ([]Message, error)
 	if err != nil {
 		return addError(messages, err)
 	}
-	return addSuccess(messages, "user created " + username)
+	return addSuccess(messages, "user created "+username)
 }
 
-func (db *Mysql) DropUser(username string) ([]Message, error) {
+func (db *mysqlDatabase) DropUser(username string) ([]Message, error) {
 	var messages []Message
-	dropUserSql := fmt.Sprintf("DROP USER %s;", username)
-	_, err := db.Execute(dropUserSql)
+	dropUserSQL := fmt.Sprintf("DROP USER %s;", username)
+	_, err := db.Execute(dropUserSQL)
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1396") {
 			warning := fmt.Sprintf("user %s does not exists: %s", username, err.Error())
@@ -96,25 +97,25 @@ func (db *Mysql) DropUser(username string) ([]Message, error) {
 		}
 		return addError(messages, err)
 	}
-	dropDatabaseSql := fmt.Sprintf("DROP DATABASE %s;", username)
-	_, err = db.Execute(dropDatabaseSql)
+	dropDatabaseSQL := fmt.Sprintf("DROP DATABASE %s;", username)
+	_, err = db.Execute(dropDatabaseSQL)
 	if err != nil {
 		return addError(messages, err)
 	}
 	return addSuccess(messages, fmt.Sprintf("user %s dropped", username))
 }
 
-func (db *Mysql) RecreateUser(username string, password string) ([]Message, error) {
+func (db *mysqlDatabase) RecreateUser(username string, password string) ([]Message, error) {
 	return recreateUser(db, username, password)
 }
 
-func (db *Mysql) ListUsers() ([]SystemUser, error) {
+func (db *mysqlDatabase) ListUsers() ([]SystemUser, error) {
 	con, _, err := db.Connect()
 	if err != nil {
 		return nil, err
 	}
 	defer con.Close()
-	var mysqlUsers []MysqlUser
+	var mysqlUsers []mysqlUser
 	sql := "SELECT User FROM mysql.user WHERE host = '%' and user != 'root';"
 	con.Select(&mysqlUsers, sql)
 	var users []SystemUser
