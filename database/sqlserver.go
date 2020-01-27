@@ -29,7 +29,7 @@ func (db *sqlserverDatabase) Config() configuration {
 
 func (db *sqlserverDatabase) Connect() (*sqlx.DB, Message, error) {
 	var message Message
-	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionUrl())
+	con, err := sqlx.Connect(db.Config().DriverClass, db.ConnectionURL())
 	if err != nil {
 		message = Message{
 			Severity: Error,
