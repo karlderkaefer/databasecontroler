@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/karlderkaefer/databasemanager/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasemanager)
 ## Database Controler 
 
-### Docker images for database
+### Oracle
 oracle image are not available on docker hub because of licensing.
 Instead you can build them by own. 
 Clone oracle repo and follow build instructions on https://github.com/oracle/docker-images/blob/master/OracleDatabase/SingleInstance/README.md

@@ -37,7 +37,7 @@ services:
     environment:
       LICENSE: accept
       DB2INST1_PASSWORD: HelloApes66
-    command: db2start
+    command: db2sampl
     ports:
       - 50000:50000
       - 55000:55000
@@ -50,11 +50,12 @@ services:
     environment:
       LICENSE: accept
       DB2INST1_PASSWORD: HelloApes66
-    command: db2start
+    command: db2sampl
     ports:
       - 50000
       - 55000
     volumes:
+      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
       - db2dataremote:/share
 
   oracle11:
