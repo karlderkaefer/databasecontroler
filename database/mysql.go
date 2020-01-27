@@ -82,7 +82,7 @@ func (db *Mysql) CreateUser(username string, password string) ([]Message, error)
 	if err != nil {
 		return addError(messages, err)
 	}
-	return addSuccess(messages, "user created " + username)
+	return addSuccess(messages, "user created "+username)
 }
 
 func (db *Mysql) DropUser(username string) ([]Message, error) {

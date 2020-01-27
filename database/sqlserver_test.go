@@ -68,5 +68,3 @@ func TestSqlserver_ListUsers(t *testing.T) {
 	}
 	assert.Equal(t, expected, resp, "Expecting to find two users as listed in %s", db.Config().DriverClass)
 }
-
-

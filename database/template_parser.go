@@ -9,16 +9,16 @@ import (
 )
 
 type TemplateValue struct {
-	User string
+	User     string
 	Password string
 }
 
 const (
 	TemplateSqlServerCreate = "sqlserver-create.tpl"
-	TemplateSqlServerDrop = "sqlserver-drop.tpl"
+	TemplateSqlServerDrop   = "sqlserver-drop.tpl"
 )
 
-func LoadTemplate(value TemplateValue, templateName string) (string, error){
+func LoadTemplate(value TemplateValue, templateName string) (string, error) {
 	path := flag.Lookup("templates").Value.(flag.Getter).Get().(string)
 	templateFile := fmt.Sprintf("%s/%s", path, templateName)
 	log.Printf("loading template from %s", templateFile)
