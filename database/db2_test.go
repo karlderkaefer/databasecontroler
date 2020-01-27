@@ -23,9 +23,7 @@ func TestDb2_CreateUserTooLong(t *testing.T) {
 func TestDb2_CreateAndListUser(t *testing.T) {
 	testUser := "testuse1"
 	testPass := "testpass"
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
+
 	db, err := GetDatabase(Db2105)
 	assert.Nil(t, err)
 	resp, err := db.CreateUser(testUser, testPass)
@@ -52,9 +50,6 @@ func TestDb2_CreateAndListUser(t *testing.T) {
 func TestDb2_DropUser(t *testing.T) {
 	testUser := "testuse2"
 	testPass := "testpass2"
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
 
 	db, err := GetDatabase(Db2105)
 	assert.Nil(t, err)
@@ -72,9 +67,6 @@ func TestDb2_DropUser(t *testing.T) {
 }
 
 func TestDb2_CreateDb2Command(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
 	db2 := new(Db2)
 	cmd := db2.CreateDb2Command("hello")
 	assert.Equal(t, "docker", cmd.Path)
