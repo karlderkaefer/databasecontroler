@@ -5,7 +5,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"log"
-	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -18,16 +17,14 @@ type Db2User struct {
 	Username string `db:"name"`
 }
 
-func (db *Db2) CreateDb2Command(commands string) *exec.Cmd {
-	baseCommand := ""
-	env, found := os.LookupEnv("DB2CMD")
-	if found {
-		baseCommand = env
-	} else {
-		baseCommand = "docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2"
+func (db *Db2) CreateDockerDb2Command(commands string) *exec.Cmd {
+	path, err := exec.LookPath("docker")
+	if err != nil {
+		log.Fatal("could not find docker installed")
 	}
+	baseCommand := "docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2"
 	cmd := &exec.Cmd{
-		Path: "docker",
+		Path: path,
 		Args: append(strings.Fields(baseCommand), strings.Fields(commands)...),
 	}
 	return cmd
@@ -50,8 +47,9 @@ func (db *Db2) Connect() (*sqlx.DB, Message, error) {
 
 func (db *Db2) Execute(command string) (Message, error) {
 	var message Message
-	out, err := db.CreateDb2Command(command).CombinedOutput()
+	out, err := db.CreateDockerDb2Command(command).CombinedOutput()
 	if err != nil {
+		log.Printf("%v", err)
 		message = Message{
 			Severity: Error,
 			Content:  string(out),

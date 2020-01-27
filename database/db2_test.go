@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -66,12 +68,18 @@ func TestDb2_DropUser(t *testing.T) {
 	assert.Contains(t, resp[0].Content, "The DROP DATABASE command completed successfully")
 }
 
-func TestDb2_CreateDb2Command(t *testing.T) {
+func TestDb2_CreateDockerDb2Command(t *testing.T) {
 	db2 := new(Db2)
-	cmd := db2.CreateDb2Command("hello")
-	assert.Equal(t, "docker", cmd.Path)
-	assert.Contains(t, cmd.Args, "hello")
-	log.Print(cmd.Path, cmd.Args)
+	cmd := db2.CreateDockerDb2Command("hello")
+
+	path, err := exec.LookPath("docker")
+	assert.Nil(t, err)
+	expect := &exec.Cmd{
+		Path: path,
+		Args: strings.Fields("docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2 hello"),
+	}
+	assert.Equal(t, expect, cmd)
+	log.Printf("%v", cmd)
 }
 
 func TestDb2_ParseDatabaseDirectoryList(t *testing.T) {
