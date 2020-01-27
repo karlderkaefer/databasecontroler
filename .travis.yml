@@ -63,10 +63,9 @@ before_script:
 script:
   # Run all the tests with the race detector enabled
   # use short test mode to exclude oracle tests
-  - go test -v -race -short -coverprofile=coverage.txt -covermode=atomic ./...
+#  - go test -v -race -short -coverprofile=coverage.txt -covermode=atomic ./...
+  - go test -v -run TestDb2_* -race -short -coverprofile=coverage.txt -covermode=atomic ./...
   # run a bunch of code checkers/linters in parallel
-  - docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2 create database some PAGESIZE 16384
-  - docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2 list database directory
   - golangci-lint run
 
 after_success:
