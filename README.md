@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/karlderkaefer/databasemanager.png)](https://travis-ci.org/karlderkaefer/databasemanager)
-[![codecov](https://codecov.io/gh/karlderkaefer/databasemanager/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasemanager)
-## Database Controler 
+[![codecov](https://codecov.io/gh/karlderkaefer/databasemanager/branch/master/graph/badge.svg)](https://codecov.io/gh/karlderkaefer/databasemanager)## Database Controler 
 
 ### Oracle
 oracle image are not available on docker hub because of licensing.
