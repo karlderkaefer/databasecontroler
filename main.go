@@ -35,14 +35,14 @@ func main() {
 }
 
 func initializeRoutes() {
-	router.GET("/", ShowIndexPage)
-	router.GET("/api/list/:database", ListDatabaseApi)
-	router.POST("/api/create", CreateDabaseApi)
-	router.POST("/api/drop", DropDatabaseApi)
-	router.POST("/api/recreate", RecreateDatabaseApi)
+	router.GET("/", showIndexPage)
+	router.GET("/api/list/:database", listDatabaseAPI)
+	router.POST("/api/create", createDabaseAPI)
+	router.POST("/api/drop", dropDatabaseAPI)
+	router.POST("/api/recreate", recreateDatabaseAPI)
 }
 
-func ShowIndexPage(c *gin.Context) {
+func showIndexPage(c *gin.Context) {
 	c.HTML(
 		http.StatusOK,
 		"index.html",
@@ -53,13 +53,13 @@ func ShowIndexPage(c *gin.Context) {
 	)
 }
 
-type FormData struct {
+type formData struct {
 	Username string `form:"username"`
 	Password string `form:"password"`
 	Database string `form:"database"`
 }
 
-func ListDatabaseApi(c *gin.Context) {
+func listDatabaseAPI(c *gin.Context) {
 	databaseName := c.Param("database")
 	db, err := database.GetDatabase(database.ParseVersion(databaseName))
 	if err != nil {
@@ -74,8 +74,8 @@ func ListDatabaseApi(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func RecreateDatabaseApi(c *gin.Context) {
-	var data FormData
+func recreateDatabaseAPI(c *gin.Context) {
+	var data formData
 	if err := c.ShouldBind(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -93,8 +93,8 @@ func RecreateDatabaseApi(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
-func CreateDabaseApi(c *gin.Context) {
-	var data FormData
+func createDabaseAPI(c *gin.Context) {
+	var data formData
 	if err := c.ShouldBind(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -112,8 +112,8 @@ func CreateDabaseApi(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
-func DropDatabaseApi(c *gin.Context) {
-	var data FormData
+func dropDatabaseAPI(c *gin.Context) {
+	var data formData
 	if err := c.ShouldBind(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

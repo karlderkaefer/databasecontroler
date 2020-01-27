@@ -10,7 +10,7 @@ import (
 )
 
 func TestDb2_CreateUserTooLong(t *testing.T) {
-	db, err := GetDatabase(Db2105)
+	db, err := GetDatabase(db2105)
 	assert.Nil(t, err)
 	resp, err := db.CreateUser("longerthan8chars", "testpass")
 	assert.NotNil(t, err)
@@ -26,7 +26,7 @@ func TestDb2_CreateAndListUser(t *testing.T) {
 	testUser := "testuse1"
 	testPass := "testpass"
 
-	db, err := GetDatabase(Db2105)
+	db, err := GetDatabase(db2105)
 	assert.Nil(t, err)
 	resp, err := db.CreateUser(testUser, testPass)
 	defer db.DropUser(testUser)
@@ -53,7 +53,7 @@ func TestDb2_DropUser(t *testing.T) {
 	testUser := "testuse2"
 	testPass := "testpass2"
 
-	db, err := GetDatabase(Db2105)
+	db, err := GetDatabase(db2105)
 	assert.Nil(t, err)
 
 	resp, err := db.DropUser(testUser)
@@ -69,7 +69,7 @@ func TestDb2_DropUser(t *testing.T) {
 }
 
 func TestDb2_CreateDockerDb2Command(t *testing.T) {
-	db2 := new(Db2)
+	db2 := new(db2)
 	cmd := db2.CreateDockerDb2Command("hello")
 
 	path, err := exec.LookPath("docker")
@@ -108,7 +108,7 @@ Database 2 entry:
  Alternate server hostname            =
  Alternate server port number         =
 `
-	db2 := new(Db2)
+	db2 := new(db2)
 	expected := []SystemUser{{"test"}, {"test2"}}
 	users := db2.ParseDatabaseDirectoryList(input)
 	assert.ElementsMatch(t, expected, users)

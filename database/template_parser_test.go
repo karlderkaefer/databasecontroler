@@ -16,8 +16,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestLoadTemplate(t *testing.T) {
-	user := TemplateValue{User: "user1", Password: "pass1"}
-	res, err := LoadTemplate(user, TemplateSqlServerCreate)
+	user := templateValue{User: "user1", Password: "pass1"}
+	res, err := loadTemplate(user, templateSQLServerCreate)
 	if err != nil {
 		t.Error(err)
 	}
