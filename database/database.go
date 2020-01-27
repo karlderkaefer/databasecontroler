@@ -1,12 +1,20 @@
 package database
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+	"github.com/jmoiron/sqlx"
+)
 
 const (
-	Success Severity = "success"
-	Info    Severity = "info"
-	Warn    Severity = "warning"
-	Error   Severity = "danger"
+	Success           Severity = "success"
+	Info              Severity = "info"
+	Warn              Severity = "warning"
+	Error             Severity = "danger"
+	UserCreated       string   = "user %s created"
+	UserAlreadyExists string   = "user %s already exists: %s"
+	UserNotExists     string   = "user %s does not exists: %s"
+	UserDropped       string   = "user %s has been dropped"
+	NameMaxLength     string   = "database name length has to be equal or less than %d"
 )
 
 type Severity string
@@ -20,6 +28,10 @@ type SystemUser struct {
 	Username string `json:"username"`
 }
 
+type UserTemplate struct {
+	User string
+}
+
 type Response struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -28,12 +40,12 @@ type Response struct {
 }
 
 type Configuration struct {
-	Host          string
-	Username      string
-	Password      string
-	Port          int
-	Instance      string
-	DriverClass   string
+	Host        string
+	Username    string
+	Password    string
+	Port        int
+	Instance    string
+	DriverClass string
 }
 
 type Database interface {
@@ -55,8 +67,8 @@ type DatabaseApi interface {
 	ListUsers() ([]SystemUser, error)
 }
 
-
 func addError(messages []Message, err error) ([]Message, error) {
+	fmt.Println(err)
 	message := Message{
 		Severity: Error,
 		Content:  err.Error(),
@@ -97,4 +109,3 @@ func recreateUser(db DatabaseApi, username string, password string) ([]Message, 
 	messages = append(messages, msg...)
 	return messages, nil
 }
-

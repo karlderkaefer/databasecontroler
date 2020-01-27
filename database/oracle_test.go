@@ -1,93 +1,84 @@
 package database
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
+func oracleVersions() []int {
+	return []int{Oracle11}
+}
+
 func TestCreateUser(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
-	for _, oracleVersion := range oracleVersions {
+	for _, oracleVersion := range oracleVersions() {
+
+		testUser := "testusercreate"
+		testPassword := "testpass"
+
 		oracle, err := GetDatabase(oracleVersion)
-		if err != nil {
-			t.Error(err)
-		}
-		resp, err := oracle.CreateUser("testusercreate", "testpass")
+		assert.Nil(t, err)
+		resp, err := oracle.CreateUser(testUser, testPassword)
 		t.Logf("%v", resp)
-		if err != nil {
-			t.Error(err)
-		}
-		expectMessage := "user created testusercreate"
-		if resp[0].Content != expectMessage {
-			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
-		}
+		assert.Nil(t, err)
+
+		assert.NotNil(t, resp)
+		assert.Len(t, resp, 1)
+		assert.Equal(t, fmt.Sprintf(UserCreated, testUser), resp[0].Content)
+
 		// user already exists
-		resp, err = oracle.CreateUser("testusercreate", "testpass")
-		if err != nil {
-			t.Error(err)
-		}
-		expectMessage = "user testusercreate already exists"
-		if !strings.Contains(resp[0].Content, expectMessage) {
-			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
-		}
-		oracle.DropUser("testusercreate")
+		resp, err = oracle.CreateUser(testUser, testPassword)
+		assert.Nil(t, err)
+
+		assert.NotNil(t, resp)
+		assert.Len(t, resp, 1)
+		assert.Contains(t, resp[0].Content, fmt.Sprintf(UserAlreadyExists, testUser, ""))
+
+		oracle.DropUser(testUser)
 	}
 }
 
 func TestDropUser(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
-	for _, oracleVersion := range oracleVersions {
+	for _, oracleVersion := range oracleVersions() {
+
+		testUser := "testusercreate"
+		testPassword := "testpass"
+
 		oracle, err := GetDatabase(oracleVersion)
-		if err != nil {
-			t.Error(err)
-		}
-		resp, _ := oracle.DropUser("testusercreate")
-		expectMessage := "user testusercreate does not exists"
-		if !strings.Contains(resp[0].Content, expectMessage) {
-			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
-		}
-		_, err = oracle.CreateUser("testusercreate", "testpass")
-		if err != nil {
-			t.Error(err)
-		}
-		resp, err = oracle.DropUser("testusercreate")
-		if err != nil {
-			t.Error(err)
-		}
-		expectMessage = "user dropped testusercreate"
-		if resp[0].Content != expectMessage {
-			t.Errorf("expected message: %s but was %s", expectMessage, resp[0].Content)
-		}
+		assert.Nil(t, err)
+		resp, err := oracle.DropUser(testUser)
+
+		assert.Nil(t, err)
+		assert.Contains(t, resp[0].Content, fmt.Sprintf(UserNotExists, testUser, ""))
+		_, err = oracle.CreateUser(testUser, testPassword)
+		assert.Nil(t, err)
+
+		resp, err = oracle.DropUser(testUser)
+		assert.Nil(t, err)
+		assert.Equal(t, fmt.Sprintf(UserDropped, testUser), resp[0].Content, testUser)
+
 	}
 }
 
 func TestListUsers(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	oracleVersions := []int{Oracle11, Oracle12}
-	for _, oracleVersion := range oracleVersions {
+	for _, oracleVersion := range oracleVersions() {
+		testUser1 := "user1"
+		testUser2 := "user2"
+		testPassword := "testpass"
 		oracle, err := GetDatabase(oracleVersion)
-		if err != nil {
-			t.Error(err)
-		}
-		oracle.DropUser("user1")
-		oracle.DropUser("user2")
-		oracle.CreateUser("user1", "testpass")
-		oracle.CreateUser("user2", "testpass")
+		assert.Nil(t, err)
+		_, _ = oracle.DropUser(testUser1)
+		_, _ = oracle.DropUser(testUser2)
+		resp, err := oracle.CreateUser(testUser1, testPassword)
+		t.Log(resp)
+		assert.Nil(t, err)
+		resp, err = oracle.CreateUser(testUser2, testPassword)
+		t.Log(resp)
+		assert.Nil(t, err)
 		expected := []SystemUser{{"USER1"}, {"USER2"}}
-		resp, err := oracle.ListUsers()
-		if err != nil {
-			t.Error(err)
-		}
-		assert.Equal(t, expected, resp, "Expecting to find two users as listed in %s", oracle)
+		users, err := oracle.ListUsers()
+		assert.Nil(t, err)
+		assert.Equal(t, expected, users, "Expecting to find two users as listed in %v", users)
 
 	}
 }

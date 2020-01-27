@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/karlderkaefer/databasemanager/database"
 	"net/http"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/karlderkaefer/databasecontroler/database"
 )
 
 var router *gin.Engine
