@@ -40,13 +40,6 @@ type SystemUser struct {
 	Username string `json:"username"`
 }
 
-type response struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Messages []Message
-}
-
 type configuration struct {
 	Host        string
 	Username    string
