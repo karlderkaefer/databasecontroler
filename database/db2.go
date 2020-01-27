@@ -72,6 +72,9 @@ func (db *Db2) ConnectionUrl() string {
 
 func (db *Db2) CreateUser(username string, password string) ([]Message, error) {
 	var messages []Message
+	if len(username) > 8 {
+		return nil, fmt.Errorf(NameMaxLength, 8)
+	}
 	msg, err := db.Execute(fmt.Sprintf("create database %s PAGESIZE 16384", username))
 	if err != nil {
 		if strings.Contains(err.Error(), "SQL1005N") {
@@ -117,7 +120,9 @@ func (db *Db2) ParseDatabaseDirectoryList(input string) []SystemUser {
 	found := regex.FindAllStringSubmatch(input, -1)
 	for _, name := range found {
 		user := &SystemUser{strings.ToLower(name[1])}
-		users = append(users, *user)
+		if user.Username != "sample" {
+			users = append(users, *user)
+		}
 	}
 	return users
 }

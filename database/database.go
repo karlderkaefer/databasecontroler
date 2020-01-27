@@ -11,6 +11,7 @@ const (
 	UserAlreadyExists string   = "user %s already exists: %s"
 	UserNotExists     string   = "user %s does not exists: %s"
 	UserDropped       string   = "user %s has been dropped"
+	NameMaxLength     string   = "database name length has to be equal or less than %d"
 )
 
 type Severity string

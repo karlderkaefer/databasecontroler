@@ -4,13 +4,25 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"log"
-	"strings"
 	"testing"
 )
 
-func TestDb2_CreateUser(t *testing.T) {
-	testUser := "testuser1"
-	testPass := "testpass1"
+func TestDb2_CreateUserTooLong(t *testing.T) {
+	db, err := GetDatabase(Db2105)
+	assert.Nil(t, err)
+	resp, err := db.CreateUser("longerthan8chars", "testpass")
+	assert.NotNil(t, err)
+	assert.Nil(t, resp)
+	assert.Error(t, err, fmt.Sprintf(NameMaxLength, 8))
+	resp, err = db.CreateUser("aaaaaaaaa", "testpass")
+	assert.NotNil(t, err)
+	assert.Nil(t, resp)
+	assert.Error(t, err, fmt.Sprintf(NameMaxLength, 8))
+}
+
+func TestDb2_CreateAndListUser(t *testing.T) {
+	testUser := "testuse1"
+	testPass := "testpass"
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
@@ -28,10 +40,17 @@ func TestDb2_CreateUser(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.Len(t, resp, 1)
 	assert.Contains(t, resp[0].Content, fmt.Sprintf(UserAlreadyExists, testUser, ""))
+
+	// test list users here because of performance
+	assert.Nil(t, err)
+	expected := []SystemUser{{testUser}}
+	users, err := db.ListUsers()
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users, "Expecting to find two users as listed in %v", users)
 }
 
 func TestDb2_DropUser(t *testing.T) {
-	testUser := "testuser2"
+	testUser := "testuse2"
 	testPass := "testpass2"
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
@@ -49,7 +68,7 @@ func TestDb2_DropUser(t *testing.T) {
 
 	resp, err = db.DropUser(testUser)
 	assert.Nil(t, err)
-	assert.Equal(t, fmt.Sprintf(UserDropped, testUser), resp[0].Content, testUser)
+	assert.Contains(t, resp[0].Content, "The DROP DATABASE command completed successfully")
 }
 
 func TestDb2_CreateDb2Command(t *testing.T) {
@@ -61,31 +80,6 @@ func TestDb2_CreateDb2Command(t *testing.T) {
 	assert.Equal(t, "docker", cmd.Path)
 	assert.Contains(t, cmd.Args, "hello")
 	log.Print(cmd.Path, cmd.Args)
-}
-
-func TestDb2_ListUsers(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	testUser1 := "user1"
-	testUser2 := "user2"
-	testPassword := "testpass"
-	db, err := GetDatabase(Db2105)
-	assert.Nil(t, err)
-	_, _ = db.DropUser(testUser1)
-	_, _ = db.DropUser(testUser2)
-	resp, err := db.CreateUser(testUser1, testPassword)
-	defer db.DropUser(testUser1)
-	t.Log(resp)
-	assert.Nil(t, err)
-	resp, err = db.CreateUser(testUser2, testPassword)
-	defer db.DropUser(testUser2)
-	t.Log(resp)
-	assert.Nil(t, err)
-	expected := []SystemUser{{strings.ToUpper(testUser1)}, {strings.ToUpper(testUser2)}}
-	users, err := db.ListUsers()
-	assert.Nil(t, err)
-	assert.Equal(t, expected, users, "Expecting to find two users as listed in %v", users)
 }
 
 func TestDb2_ParseDatabaseDirectoryList(t *testing.T) {
