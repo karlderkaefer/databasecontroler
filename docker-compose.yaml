@@ -33,16 +33,16 @@ services:
 
   db2:
     image: ibmcom/db2express-c:latest
+    container_name: db2
     environment:
       LICENSE: accept
       DB2INST1_PASSWORD: HelloApes66
-#    entrypoint: /entrypoint.sh
     command: db2start
     ports:
       - 50000:50000
       - 55000:55000
     volumes:
-#      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
+      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
       - db2data:/share
 
   db2remote:
@@ -62,8 +62,8 @@ services:
     shm_size: 1g
     environment:
       ORACLE_PWD: HelloApes66
-#    volumes:
-#      - ./oradata:/opt/oracle/oradata
+    volumes:
+      - ./oradata:/opt/oracle/oradata
     ports:
       - 1521:1521
       - 8080

@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -18,7 +19,13 @@ type Db2User struct {
 }
 
 func (db *Db2) CreateDb2Command(commands string) *exec.Cmd {
-	baseCommand := "docker exec --user db2inst1 databasemanager_db2_1 /home/db2inst1/sqllib/bin/db2"
+	baseCommand := ""
+	env, found := os.LookupEnv("DB2CMD")
+	if found {
+		baseCommand = env
+	} else {
+		baseCommand = "docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2"
+	}
 	cmd := &exec.Cmd{
 		Path: "docker",
 		Args: append(strings.Fields(baseCommand), strings.Fields(commands)...),
@@ -68,7 +75,8 @@ func (db *Db2) CreateUser(username string, password string) ([]Message, error) {
 	msg, err := db.Execute(fmt.Sprintf("create database %s PAGESIZE 16384", username))
 	if err != nil {
 		if strings.Contains(err.Error(), "SQL1005N") {
-			return addError(messages, &UserAlreadyExistsError{username, "Cannot create user."})
+			warning := fmt.Sprintf(UserAlreadyExists, username, err.Error())
+			return addWarn(messages, warning), nil
 		} else {
 			return addError(messages, err)
 		}
@@ -83,8 +91,8 @@ func (db *Db2) DropUser(username string) ([]Message, error) {
 	db.Execute("uncatalog database " + username)
 	if err != nil {
 		if strings.Contains(err.Error(), "SQL1013N") {
-			warning := fmt.Sprintf("user %s does not exist: %s", username, err.Error())
-			return addWarn(messages, warning), nil
+			message := fmt.Sprintf(UserNotExists, username, err.Error())
+			return addWarn(messages, message), nil
 		}
 		return addError(messages, err)
 	}

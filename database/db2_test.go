@@ -1,53 +1,55 @@
 package database
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"strings"
 	"testing"
 )
 
 func TestDb2_CreateUser(t *testing.T) {
+	testUser := "testuser1"
+	testPass := "testpass1"
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
 	db, err := GetDatabase(Db2105)
-	if err != nil {
-		t.Error(err)
-	}
-	defer db.DropUser("test2")
-	msg, err := db.CreateUser("test2", "test2")
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, msg[0].Severity, Success)
-	assert.Contains(t, msg[0].Content, "CREATE DATABASE command completed successfully")
+	assert.Nil(t, err)
+	resp, err := db.CreateUser(testUser, testPass)
+	defer db.DropUser(testUser)
+	assert.Nil(t, err)
+	assert.Equal(t, resp[0].Severity, Success)
+	assert.Contains(t, resp[0].Content, "CREATE DATABASE command completed successfully")
 
-	_, err = db.CreateUser("test2", "test2")
-	assert.IsType(t, err, new(UserAlreadyExistsError))
+	// test user already exists
+	resp, err = db.CreateUser(testUser, testPass)
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	assert.Len(t, resp, 1)
+	assert.Contains(t, resp[0].Content, fmt.Sprintf(UserAlreadyExists, testUser, ""))
 }
 
 func TestDb2_DropUser(t *testing.T) {
+	testUser := "testuser2"
+	testPass := "testpass2"
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
-	db, err := GetDatabase(Db2105)
-	if err != nil {
-		t.Error(err)
-	}
-	msg, err := db.DropUser("test3")
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, msg[0].Severity, Warn)
-	assert.Contains(t, msg[0].Content, "user test3 does not exist")
 
-	db.CreateUser("test3", "test3")
-	msg, err = db.DropUser("test3")
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Equal(t, msg[0].Severity, Success)
-	assert.Contains(t, msg[0].Content, "user test3 dropped")
+	db, err := GetDatabase(Db2105)
+	assert.Nil(t, err)
+
+	resp, err := db.DropUser(testUser)
+
+	assert.Nil(t, err)
+	assert.Contains(t, resp[0].Content, fmt.Sprintf(UserNotExists, testUser, ""))
+	_, err = db.CreateUser(testUser, testPass)
+	assert.Nil(t, err)
+
+	resp, err = db.DropUser(testUser)
+	assert.Nil(t, err)
+	assert.Equal(t, fmt.Sprintf(UserDropped, testUser), resp[0].Content, testUser)
 }
 
 func TestDb2_CreateDb2Command(t *testing.T) {
@@ -65,16 +67,25 @@ func TestDb2_ListUsers(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
+	testUser1 := "user1"
+	testUser2 := "user2"
+	testPassword := "testpass"
 	db, err := GetDatabase(Db2105)
-	if err != nil {
-		t.Error(err)
-	}
-	//db.CreateUser("test2","test2")
+	assert.Nil(t, err)
+	_, _ = db.DropUser(testUser1)
+	_, _ = db.DropUser(testUser2)
+	resp, err := db.CreateUser(testUser1, testPassword)
+	defer db.DropUser(testUser1)
+	t.Log(resp)
+	assert.Nil(t, err)
+	resp, err = db.CreateUser(testUser2, testPassword)
+	defer db.DropUser(testUser2)
+	t.Log(resp)
+	assert.Nil(t, err)
+	expected := []SystemUser{{strings.ToUpper(testUser1)}, {strings.ToUpper(testUser2)}}
 	users, err := db.ListUsers()
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Len(t, users, 1)
+	assert.Nil(t, err)
+	assert.Equal(t, expected, users, "Expecting to find two users as listed in %v", users)
 }
 
 func TestDb2_ParseDatabaseDirectoryList(t *testing.T) {
