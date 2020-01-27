@@ -1,6 +1,9 @@
 package database
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+	"github.com/jmoiron/sqlx"
+)
 
 const (
 	Success           Severity = "success"
@@ -65,6 +68,7 @@ type DatabaseApi interface {
 }
 
 func addError(messages []Message, err error) ([]Message, error) {
+	fmt.Println(err)
 	message := Message{
 		Severity: Error,
 		Content:  err.Error(),

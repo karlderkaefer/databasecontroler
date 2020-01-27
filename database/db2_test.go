@@ -29,7 +29,7 @@ func TestDb2_CreateAndListUser(t *testing.T) {
 	resp, err := db.CreateUser(testUser, testPass)
 	defer db.DropUser(testUser)
 	assert.Nil(t, err)
-	assert.Equal(t, resp[0].Severity, Success)
+	assert.Equal(t, Success, resp[0].Severity)
 	assert.Contains(t, resp[0].Content, "CREATE DATABASE command completed successfully")
 
 	// test user already exists
