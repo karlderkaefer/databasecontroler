@@ -76,7 +76,7 @@ func TestDb2_CreateDockerDb2Command(t *testing.T) {
 	assert.Nil(t, err)
 	expect := &exec.Cmd{
 		Path: path,
-		Args: strings.Fields("docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2 hello"),
+		Args: strings.Fields("docker exec --user db2inst1 databasemanager_db2_1 /home/db2inst1/sqllib/bin/db2 hello"),
 	}
 	assert.Equal(t, expect, cmd)
 	log.Printf("%v", cmd)
