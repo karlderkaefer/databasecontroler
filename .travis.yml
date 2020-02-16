@@ -35,7 +35,7 @@ before_script:
   - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
   - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
   - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
-  - docker run -d --rm --name db2 -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -p 50000:50000 karlderkaefer/private:db2-10.5.0.5-3.10.0 db2sampl
+  - docker run -d --rm --name databasemanager_db2_1 --ipc="host" --cap-add IPC_LOCK --cap-add IPC_OWNER -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -p 50000:50000 ibmcom/db2
 
   # oracle client driver
   - docker run -d --rm --name client karlderkaefer/private:oracleclient12
@@ -47,7 +47,7 @@ before_script:
   - WAIT_TIME=0
   - while [[ "$(docker inspect -f {{.State.Health.Status}} oracle11)" != "healthy" && "$WAIT_TIMEOUT" -lt 60 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for oracle11 to be healthy; done;
 
-  - docker logs db2
+  - docker logs databasemanager_db2_1
   - docker logs oracle11
   # make oracle db available from other hosts
   - docker exec oracle11 sed -i -E "s/(HOST = )(.*)(\)\(.*)/\10.0.0.0\3/" /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora

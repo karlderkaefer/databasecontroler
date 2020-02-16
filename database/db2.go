@@ -18,7 +18,7 @@ func (db *db2) CreateDockerDb2Command(commands string) *exec.Cmd {
 	if err != nil {
 		log.Fatal("could not find docker installed")
 	}
-	baseCommand := "docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2"
+	baseCommand := "docker exec --user db2inst1 databasemanager_db2_1 /home/db2inst1/sqllib/bin/db2"
 	cmd := &exec.Cmd{
 		Path: path,
 		Args: append(strings.Fields(baseCommand), strings.Fields(commands)...),
