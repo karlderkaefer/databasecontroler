@@ -35,7 +35,7 @@ before_script:
 #  - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
 #  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
 #  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
-  - docker run -d --rm --name databasemanager_db2_1 --privileged -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -e TEXT_SEARCH="false" -e ARCHIVE_LOGS="false" --health-cmd='nc -vz localhost 50000' -v $(pwd)/scripts/db2/init.sh:/var/custom/.init.sh --health-start-period=30s -p 50000:50000 ibmcom/db2:11.5.0.0
+  - docker run -d --rm --name databasemanager_db2_1 --privileged -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -e TEXT_SEARCH="false" -e ARCHIVE_LOGS="false" --health-cmd='nc -vz localhost 50000' -v $(pwd)/scripts/db2/init.sh:/var/custom/init.sh --health-start-period=30s -p 50000:50000 ibmcom/db2:11.5.0.0
   - WAIT_TIME=0
   - while [[ "$(docker inspect -f {{.State.Health.Status}} databasemanager_db2_1)" != "healthy" && "$WAIT_TIMEOUT" -lt 60 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for databasemanager_db2_1 to be healthy; done;
   - docker logs databasemanager_db2_1
@@ -43,10 +43,8 @@ before_script:
   - cat ~/.bash_aliases
   - docker exec databasemanager_db2_1 su - db2inst1 -c "pwd"
   - docker exec databasemanager_db2_1 su - db2inst1 -c "ls -al /home && ls -al ~"
-  - docker exec databasemanager_db2_1 su - db2inst1 -c "ls -al /home/db2inst1"
-  - docker exec databasemanager_db2_1 su - db2inst1 -c "ls -al /home/db2inst1/sqllib"
-  - docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 list database directory"
-  - docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 get dbm cfg" | grep MEMORY
+  - docker exec databasemanager_db2_1 su - db2inst1 -c "~/sqllib/bin/db2 list database directory"
+  - docker exec databasemanager_db2_1 su - db2inst1 -c "~/sqllib/bin/db2 get dbm cfg" | grep MEMORY
   - db2 get dbm cfg | grep MEMORY
   - db2 list database directory
   # oracle client driver
