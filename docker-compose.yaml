@@ -38,6 +38,7 @@ services:
       # improve performance see docker hub
       ARCHIVE_LOGS: "false"
       AUTOCONFIG: "false"
+      TEXT_SEARCH: "false"
     ports:
       - 50000:50000
       - 55000:55000
