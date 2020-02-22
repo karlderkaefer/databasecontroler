@@ -22,7 +22,7 @@ services:
       - 1433:1433
 
   db2:
-    image: ibmcom/db2
+    image: ibmcom/db2:11.5.0.0
     # don't run db2 container in privileges mode as this is huge security risk
     # instead we only shared the needed IPC privileges with host
     # privileged: true

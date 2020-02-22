@@ -35,9 +35,9 @@ before_script:
 #  - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
 #  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
 #  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
-  - docker run -d --rm --name databasemanager_db2_1 --ipc="host" --cap-add IPC_LOCK --cap-add IPC_OWNER -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -p 50000:50000 ibmcom/db2
+  - docker run -d --rm --name databasemanager_db2_1 --ipc="host" --cap-add IPC_LOCK --cap-add IPC_OWNER -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -p 50000:50000 ibmcom/db2:11.5.0.0
   - alias db2="docker exec databasemanager_db2_1 su - db2inst1 -c \"/home/db2inst1/sqllib/bin/db2 \$1\""
-
+  - db2 list database directory
   # oracle client driver
 #  - docker run -d --rm --name client karlderkaefer/private:oracleclient12
 #  - docker cp client:/opt/oracle /opt/
