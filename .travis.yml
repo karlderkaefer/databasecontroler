@@ -29,11 +29,6 @@ notifications:
 # build and immediately stop. It's sorta like having set -e enabled in bash.
 # Make sure golangci-lint is vendored.
 before_script:
-  - set -x
-  - echo "function db2() { docker exec databasemanager_db2_1 su - db2inst1 -c \"/home/db2inst1/sqllib/bin/db2 \$*\" ;}" > ~/.bash_aliases
-  - source ~/.bash_aliases
-  - cat ~/.bash_aliases
-  - db2 list database directory
   - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
   - sudo /etc/init.d/mysql stop
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
@@ -41,6 +36,11 @@ before_script:
 #  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
 #  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
   - docker run -d --rm --name databasemanager_db2_1 --ipc="host" --cap-add IPC_LOCK --cap-add IPC_OWNER -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -p 50000:50000 ibmcom/db2:11.5.0.0
+  - set -x
+  - echo "function db2() { docker exec databasemanager_db2_1 su - db2inst1 -c \"/home/db2inst1/sqllib/bin/db2 \$*\" ;}" > ~/.bash_aliases
+  - source ~/.bash_aliases
+  - cat ~/.bash_aliases
+  - db2 list database directory
   # oracle client driver
 #  - docker run -d --rm --name client karlderkaefer/private:oracleclient12
 #  - docker cp client:/opt/oracle /opt/
