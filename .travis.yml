@@ -40,7 +40,7 @@ before_script:
   - WAIT_TIME=0
   - while [[ "$(docker inspect -f {{.State.Health.Status}} databasemanager_db2_1)" != "healthy" && "$WAIT_TIMEOUT" -lt 60 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for databasemanager_db2_1 to be healthy; done;
   - docker logs databasemanager_db2_1
-  - echo 'function db2() { docker exec databasemanager_db2_1 su - db2inst1 -c "~/sqllib/bin/db2 $*" ;}' >> ~/.bash_aliases  - source ~/.bash_aliases
+  - echo 'function db2() { docker exec databasemanager_db2_1 su - db2inst1 -c "~/sqllib/bin/db2 $*" ;}' >> ~/.bash_aliases
   - source ~/.bash_aliases
   - docker exec databasemanager_db2_1 su - db2inst1 -c "pwd"
   - docker exec databasemanager_db2_1 su - db2inst1 -c "ls -al /home && ls -al ~"
