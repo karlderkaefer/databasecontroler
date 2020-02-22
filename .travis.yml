@@ -32,26 +32,27 @@ before_script:
   - curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
   - sudo /etc/init.d/mysql stop
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
-  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
-  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
+#  - docker run -d --rm --name mysql -p 3306:3306 -e MYSQL_DATABASE=seed -e MYSQL_ROOT_PASSWORD=HelloApes66 mysql:5.7
+#  - docker run -d --rm --name sqlserver -e MSSQL_PID=Express -e ACCEPT_EULA=y -e SA_PASSWORD=HelloApes66 -p 1433:1433 microsoft/mssql-server-linux
+#  - docker run -d --rm --name oracle11 --shm-size=1g -e ORACLE_PWD=HelloApes66 -e LD_LIBRARY_PATH='$ORACLE_HOME/lib:/lib:/usr/lib;' -p 1521:1521 karlderkaefer/private:oracle11-11.2.0.2-xe
   - docker run -d --rm --name databasemanager_db2_1 --ipc="host" --cap-add IPC_LOCK --cap-add IPC_OWNER -e LICENSE=accept -e DB2INST1_PASSWORD=HelloApes66 -e DBNAME=sample -p 50000:50000 ibmcom/db2
+  - alias db2="docker exec databasemanager_db2_1 su - db2inst1 -c \"/home/db2inst1/sqllib/bin/db2 \$1\""
 
   # oracle client driver
-  - docker run -d --rm --name client karlderkaefer/private:oracleclient12
-  - docker cp client:/opt/oracle /opt/
-  - export ORACLE_CLIENT=/opt/oracle/instantclient_12_2
-  - export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
-  - ln -s $ORACLE_CLIENT/libclntsh.so.12.1 libclntsh.so
-  - ln -s $ORACLE_CLIENT/libocci.so.12.1 libocci.so.12.1
-  - WAIT_TIME=0
-  - while [[ "$(docker inspect -f {{.State.Health.Status}} oracle11)" != "healthy" && "$WAIT_TIMEOUT" -lt 60 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for oracle11 to be healthy; done;
+#  - docker run -d --rm --name client karlderkaefer/private:oracleclient12
+#  - docker cp client:/opt/oracle /opt/
+#  - export ORACLE_CLIENT=/opt/oracle/instantclient_12_2
+#  - export LD_LIBRARY_PATH=/opt/oracle/instantclient_12_2:$LD_LIBRARY_PATH
+#  - ln -s $ORACLE_CLIENT/libclntsh.so.12.1 libclntsh.so
+#  - ln -s $ORACLE_CLIENT/libocci.so.12.1 libocci.so.12.1
+#  - WAIT_TIME=0
+#  - while [[ "$(docker inspect -f {{.State.Health.Status}} oracle11)" != "healthy" && "$WAIT_TIMEOUT" -lt 60 ]]; do sleep 5; ((WAIT_TIMEOUT++));echo waiting for oracle11 to be healthy; done;
 
   - docker logs databasemanager_db2_1
-  - docker logs oracle11
+#  - docker logs oracle11
   # make oracle db available from other hosts
-  - docker exec oracle11 sed -i -E "s/(HOST = )(.*)(\)\(.*)/\10.0.0.0\3/" /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
-  - docker exec oracle11 cat /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
+#  - docker exec oracle11 sed -i -E "s/(HOST = )(.*)(\)\(.*)/\10.0.0.0\3/" /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
+#  - docker exec oracle11 cat /u01/app/oracle/product/11.2.0/xe/network/admin/tnsnames.ora
   - docker stats --no-stream
 
 # script always runs to completion (set +e). If we have linter issues AND a
