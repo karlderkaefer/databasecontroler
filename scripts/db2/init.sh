@@ -1,1 +1,1 @@
-yum install nc
+yum -y install nc

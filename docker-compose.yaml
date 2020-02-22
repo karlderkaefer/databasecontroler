@@ -42,7 +42,11 @@ services:
     ports:
       - 50000:50000
       - 55000:55000
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "localhost", "50000"]
+      interval: 30s
     volumes:
+      - ./scripts/db2/init.sh:/var/custom/init.sh
       - db2data:/database
 
   oracle11:
