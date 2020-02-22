@@ -42,6 +42,7 @@ before_script:
   - echo 'function db2() { docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 $*" ;}' >> ~/.bash_aliases
   - source ~/.bash_aliases
   - cat ~/.bash_aliases
+  - docker exec databasemanager_db2_1 su - db2inst1 -c "pwd"
   - docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 list database directory"
   - docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 get dbm cfg" | grep MEMORY
   - db2 get dbm cfg | grep MEMORY
