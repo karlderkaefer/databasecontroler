@@ -14,15 +14,15 @@ type db2 struct {
 }
 
 func (db *db2) CreateDockerDb2Command(commands string) *exec.Cmd {
-	path, err := exec.LookPath("docker")
+	path, err := exec.LookPath("db2")
 	if err != nil {
-		log.Fatal("could not find docker installed")
+		log.Fatal("could not find db2 installed. See readme how to add db2")
 	}
-	baseCommand := "docker exec --user db2inst1 db2 /home/db2inst1/sqllib/bin/db2"
 	cmd := &exec.Cmd{
 		Path: path,
-		Args: append(strings.Fields(baseCommand), strings.Fields(commands)...),
+		Args: append([]string{"db2"}, strings.Fields(commands)...),
 	}
+	fmt.Printf("%v", cmd)
 	return cmd
 }
 

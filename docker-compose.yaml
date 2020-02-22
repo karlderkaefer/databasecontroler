@@ -1,62 +1,53 @@
-version: '2'
+version: '3'
 
 services:
-  postgres:
-    image: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: helloape
-    volumes:
-       - data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-
   mysql:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: HelloApes66
       MYSQL_DATABASE: seed
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --init-connect='SET NAMES UTF8;'
-#    volumes:
-#      - mysqldata:/var/lib/mysql
+    volumes:
+      - mysqldata:/var/lib/mysql
     ports:
       - 3306:3306
 
   sqlserver:
     image: microsoft/mssql-server-linux
     environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: HelloApes66
-      MSSQL_PID: Express
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "HelloApes66"
+      MSSQL_PID: "Express"
     ports:
       - 1433:1433
 
   db2:
-    image: ibmcom/db2express-c:latest
-    container_name: db2
+    image: ibmcom/db2:11.5.0.0
+    # don't run db2 container in privileges mode as this is huge security risk
+    # instead we only shared the needed IPC privileges with host
+    # privileged: true
+    ipc: host
+    cap_add:
+      - IPC_OWNER
+      - IPC_LOCK
     environment:
       LICENSE: accept
       DB2INST1_PASSWORD: HelloApes66
-    command: db2sampl
+      PERSISTENT_HOME: "false"
+      DBNAME: sample
+      # improve performance see docker hub
+      ARCHIVE_LOGS: "false"
+      AUTOCONFIG: "false"
+      TEXT_SEARCH: "false"
     ports:
       - 50000:50000
       - 55000:55000
+    healthcheck:
+      test: ["CMD", "nc", "-vz", "localhost", "50000"]
+      interval: 30s
     volumes:
-      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
-      - db2data:/share
-
-  db2remote:
-    image: ibmcom/db2express-c:latest
-    environment:
-      LICENSE: accept
-      DB2INST1_PASSWORD: HelloApes66
-    command: db2sampl
-    ports:
-      - 50000
-      - 55000
-    volumes:
-      - ./scripts/db2/entrypoint.sh:/entrypoint.sh
-      - db2dataremote:/share
+      - ./scripts/db2/init.sh:/var/custom/init.sh
+      - db2data:/database
 
   oracle11:
     image: oracle/database:11.2.0.2-xe
@@ -64,7 +55,7 @@ services:
     environment:
       ORACLE_PWD: HelloApes66
     volumes:
-      - ./oradata:/opt/oracle/oradata
+      - oracle11data:/opt/oracle/oradata
     ports:
       - 1521:1521
       - 8080
@@ -90,8 +81,8 @@ services:
       - 5050:8080
 
 volumes:
-  data:
   oracle12data:
+  oracle11data:
   mysqldata:
   db2data:
   db2dataremote:
