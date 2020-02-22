@@ -28,6 +28,7 @@ func TestDb2_CreateAndListUser(t *testing.T) {
 
 	db, err := GetDatabase(db2105)
 	assert.Nil(t, err)
+	db.ListUsers()
 	resp, err := db.CreateUser(testUser, testPass)
 	defer db.DropUser(testUser)
 	assert.Nil(t, err)
@@ -72,11 +73,11 @@ func TestDb2_CreateDockerDb2Command(t *testing.T) {
 	db2 := new(db2)
 	cmd := db2.CreateDockerDb2Command("hello")
 
-	path, err := exec.LookPath("docker")
+	path, err := exec.LookPath("db2")
 	assert.Nil(t, err)
 	expect := &exec.Cmd{
 		Path: path,
-		Args: strings.Fields("docker exec --user db2inst1 databasemanager_db2_1 /home/db2inst1/sqllib/bin/db2 hello"),
+		Args: strings.Fields("db2 hello"),
 	}
 	assert.Equal(t, expect, cmd)
 	log.Printf("%v", cmd)

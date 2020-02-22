@@ -29,7 +29,7 @@ Add `db2.cmd` to `%USERPROFILE%\bin` and add this directory to your `PATH`.
 Content of `db2.cmd`
 ```bash
 @echo off
-docker exec --user db2inst1 databasemanager_db2_1 /home/db2inst1/sqllib/bin/db2 %*
+docker exec databasemanager_db2_1 su - db2inst1 -c "/home/db2inst1/sqllib/bin/db2 %*"
 ```
 Now you are able to run db2 command directly from host in the container.
 ```bash
